@@ -1,0 +1,13 @@
+﻿https://github.com/commandlineparser/commandline/issues/146
+Menciona a los tags:
+[FileExists] 
+[DirectoryExists] 
+[FileNotExists]
+[DirectoryNotExists] 
+[RegExValidation]
+[FilePathValid]
+[DirectoryValid]
+
+
+https://codingblog.carterdan.net/2019/04/12/command-line-parser/
+Menciona la diferencia entre Verbos, opciones
