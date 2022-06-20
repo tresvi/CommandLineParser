@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    internal class WrongPropertyTypeException: Exception
+    internal class WrongPropertyTypeException: CommandParserException
     {
         public WrongPropertyTypeException() { }
         public WrongPropertyTypeException(string message) : base(message) { }

@@ -3,14 +3,14 @@ using CommandParser.DecoratorAttributes;
 
 namespace Test_CommandParser.Models
 {
-    internal class Parameters
+    internal class Params_With_File_Dir_NotExists
     {
+        [FileNotExists]
         [Option("inputfile", "i", true, HelpText = "Archivo de entrada a ser procesado.")]
         public string? InputFile { get; set; }
 
-
-        [Option("outputfile", "o", true, HelpText = "Archivo de salida resultante del procesamiento.")]
+        [DirectoryNotExists]
+        [Option("outputdir", "o", true, HelpText = "Directorio de Salida de procesamiento.")]
         public string? OutputFile { get; set; }
-
     }
 }

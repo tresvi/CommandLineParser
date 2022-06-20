@@ -30,7 +30,7 @@ namespace CommandParser.Attributtes
             if (argument.NotFound)
             {
                 if (this.IsRequired)
-                    throw new ArgumentNotFoundException($"El argumento requerido {this.Keyword}/{this.ShortKeyword} no fue definido");
+                    throw new RequiredParameterNotFoundException($"El parametro requerido {this.Keyword}/{this.ShortKeyword} no fue definido en la linea de comando");
                 else
                     return;
             }
@@ -75,11 +75,14 @@ namespace CommandParser.Attributtes
             }
 
             if (matchCounter > 1) throw new RepeatedArgumentException($"El argumento {this.Keyword}/{this.ShortKeyword} fue definido mas de una vez");
-            if (CLI_Arguments.Count < keyword.Index + 2) throw new ValueNotFoundException($"El valor del argumento {keyword.Name} no fue encontrado");
+            
+            //Detecta si falta el valor de un ultimo parametro
+            if (CLI_Arguments.Count < keyword.Index + 2) throw new ValueNotSpecifiedException($"El valor del argumento {keyword.Name} no fue especificado");
 
+            //Detecta si falta el valor de un parametro que no es el ultimo
             keyword.Value = CLI_Arguments[keyword.Index + 1];
             if (keyword.Value.StartsWith("--") || keyword.Value.StartsWith("-"))
-                throw new ValueNotFoundException($"El valor del argumento {keyword.Name} no fue encontrado");
+                throw new ValueNotSpecifiedException($"El valor del argumento {keyword.Name} no fue especifica");
 
             return keyword;
         }

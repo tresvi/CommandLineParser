@@ -1,9 +1,6 @@
 ﻿using CommandParser;
+using CommandParser.Exceptions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ejemplo_NF_4_8
 {
@@ -13,9 +10,20 @@ namespace Ejemplo_NF_4_8
         {
             try
             {
+                object parametro = CommandLine.Parse<Parameters, int>(args);
+
                 Parameters parametros = CommandLine.Parse<Parameters>(args);
                 Console.WriteLine(parametros?.ToString());
                 Console.WriteLine("Fin OK!!");
+            }
+
+            catch (RequiredParameterNotFoundException ex)
+            {
+
+            }
+            catch (CommandParserException ex)
+            {
+                //TODO
             }
             catch (Exception ex)
             {

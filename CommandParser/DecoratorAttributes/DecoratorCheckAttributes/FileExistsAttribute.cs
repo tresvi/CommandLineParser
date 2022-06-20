@@ -1,4 +1,5 @@
 ﻿using CommandParser.Attributtes;
+using CommandParser.Exceptions;
 using System;
 using System.IO;
 using System.Reflection;
@@ -12,7 +13,7 @@ namespace CommandParser.DecoratorAttributes
         {
             string filePath = argument.Value.Trim();
             if (!File.Exists(filePath))
-                throw new FileNotFoundException($"El archivo especificado en el parametro {argument.Name}={filePath} no fue hallado en la ruta especificada");
+                throw new FileNotExistsException($"El archivo especificado en el parametro {argument.Name}={filePath} no fue hallado en la ruta especificada");
             
             return true;
         }

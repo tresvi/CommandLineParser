@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    internal class InvalidFormatException: Exception
+    internal class InvalidFormatException: CommandParserException
     {
         public InvalidFormatException() { }
         public InvalidFormatException(string message) : base(message) { }

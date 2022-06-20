@@ -11,6 +11,7 @@ using System.ComponentModel;
 
 namespace Ejemplo_NF_4_8
 {
+    [Verb("Commit","Es un commit", true)]
     public class Parameters
     {
         //The Art of UNIX Programming
@@ -36,19 +37,6 @@ namespace Ejemplo_NF_4_8
         [Obsolete]
         [Flag("notificarpormail", "n", true, HelpText = "Indica si se debe notificar por mail el resultado del proceso.")]
         public DateTime NotificarPorMail { get; set; }
-
-        [Verb(true)]
-        public Acciones Verbo { get; set; }
-
-        [VerbEnum]
-        public enum Acciones 
-        {
-            [Prueba("aaa")]
-            Commit,
-            [Prueba("aaa")]
-            add,
-            delete
-        }
 
 
         public override string ToString()

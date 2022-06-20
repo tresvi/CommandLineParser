@@ -1,4 +1,5 @@
 ﻿using CommandParser.Attributtes;
+using CommandParser.Exceptions;
 using System;
 using System.IO;
 using System.Reflection;
@@ -15,7 +16,7 @@ namespace CommandParser.DecoratorAttributes
             if (!directory.EndsWith(Path.DirectorySeparatorChar.ToString())) directory += Path.DirectorySeparatorChar;
 
             if (!Directory.Exists(directory))
-                throw new DirectoryNotFoundException($"El directorio requerido especificado en el parametro {argument.Name}={directory} no existe");
+                throw new DirectoryNotExistsException($"El directorio requerido especificado en el parametro {argument.Name}={directory} no existe");
 
             return true;
         }

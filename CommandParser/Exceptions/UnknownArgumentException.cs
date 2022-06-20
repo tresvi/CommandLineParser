@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    internal class UnknownArgumentException: Exception
+    internal class UnknownArgumentException: CommandParserException
     {
         public UnknownArgumentException() { }
         public UnknownArgumentException(string message) : base(message) { }
