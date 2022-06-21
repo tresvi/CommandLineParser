@@ -10,10 +10,10 @@ namespace CommandParser.Attributtes
     {
         public bool DefaultValue { get; set; }
 
-        public FlagAttribute(string keyword, string shortKeyword,  bool defaultValue = false, string helpText = "") 
-            :base (keyword, shortKeyword, false, helpText)
+        public FlagAttribute(string keyword, string shortKeyword, bool defaultValue = false, string helpText = "")
+            : base(keyword, shortKeyword, false, helpText)
         {
-            this.DefaultValue = defaultValue; 
+            this.DefaultValue = defaultValue;
         }
 
         internal override void ParseAndAssign(PropertyInfo property, object targetObject, List<string> CLI_Arguments, ref List<string> ControlCLI_Arguments)

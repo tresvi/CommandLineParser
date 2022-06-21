@@ -2,7 +2,7 @@
 
 namespace Test_CommandParser.Models.Verbs
 {
-    [Verb("delete", "Comando para eliminar archivo", true)]
+    [Verb("delete", "Comando para eliminar archivo")]
     internal class Commit
     {
         [Option("file", "f", true, "", "Ruta del archivo a confirmar")]

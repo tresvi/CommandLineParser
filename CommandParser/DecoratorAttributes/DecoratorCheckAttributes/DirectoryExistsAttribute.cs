@@ -9,7 +9,7 @@ namespace CommandParser.DecoratorAttributes
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class DirectoryExistsAttribute : DecoratorCheckAttributeBase
     {
-      
+
         internal override bool Check(Argument argument, PropertyInfo property)
         {
             string directory = argument.Value.Trim();

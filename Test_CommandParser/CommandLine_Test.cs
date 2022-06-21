@@ -51,7 +51,7 @@ namespace Test_CommandParser
             Directory.CreateDirectory(outputDir);
 
             _ = CommandLine.Parse<Params_With_File_Dir_Exists>(args);
-            
+
             File.Delete(inputFile);
             Directory.Delete(outputDir);
 
@@ -61,7 +61,7 @@ namespace Test_CommandParser
 
         [TestCase(@"--inputfile ..\Archivo.txt --outputdir ..\qwerty2134s.sdssrWE\")]
         public void Parse_DirectoryExists_Throw_DirectoryNotExists(string inputLine)
-        { 
+        {
             string[] args = inputLine.Split(' ');
             try { Directory.Delete(args[3]); }      //Por las dudas borro el directorio en caso de existir
             catch { }

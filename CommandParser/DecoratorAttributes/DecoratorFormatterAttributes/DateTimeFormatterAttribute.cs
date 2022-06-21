@@ -23,5 +23,5 @@ namespace CommandParser.DecoratorAttributes.DecoratorFormatterAttributes
                 throw new InvalidFormatException($"El valor del argumento {argument.Name} no corresponde al formato de fecha especificado: {this.Format}");
         }
     }
-   
+
 }

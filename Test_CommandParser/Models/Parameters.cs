@@ -1,5 +1,4 @@
 ﻿using CommandParser.Attributtes;
-using CommandParser.DecoratorAttributes;
 
 namespace Test_CommandParser.Models
 {

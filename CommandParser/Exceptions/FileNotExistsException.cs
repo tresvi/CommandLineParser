@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CommandParser.Exceptions
 {
-    public class FileNotExistsException: CommandParserException
+    public class FileNotExistsException : CommandParserException
     {
         public FileNotExistsException() { }
         public FileNotExistsException(string message) : base(message) { }

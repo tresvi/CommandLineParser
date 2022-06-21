@@ -9,6 +9,9 @@ using System.Text;
 
 namespace CommandParser
 {
+    //TODO: Agregar un metodo de validacion de estrucura de las clases. Que no haya nombres ni nombres cortos repetidos dentro de una misma clase.
+    //TODO: Agregar un metodo de validacion de clases verbo. que ambas no repitan el mismo verbo.
+    //TODO: Analizar la posibilidad de definir un verbo por default (que se tome en caso de que no se escriba nada) para futuras versiones.
     public static class CommandLine
     {
 
@@ -16,7 +19,7 @@ namespace CommandParser
         {
             T targetObject = new T();
             List<string> CLI_Arguments = new List<string>(args);
-            
+
             if (IsHelpRequested(CLI_Arguments))
             {
                 PrintHelp(CLI_Arguments, targetObject);
@@ -40,32 +43,36 @@ namespace CommandParser
         }
 
 
-        public static object Parse<T1, T2>(string[] args) 
+        public static object Parse<T1, T2>(string[] args)
             where T1 : new()
             where T2 : new()
         {
-            VerbHelper.ValidateVerbDecoration<T1, T2>();
-            object defaultVerb = VerbHelper.DetectDefaultVerb<T1, T2>();
+            List<string> verbsAvailable = VerbHelper.ValidateVerbDecoration<T1, T2>();
+            //List<string> defaultVerbs = VerbHelper.DetectDefaultVerbs<T1, T2>();
 
+
+            //if (defaultVerbs.Count > 1)
+            //    throw new ToManyDefaultVerbsException($"Se han especificado mas de un verbo como Default, solo puede haber 1: Verbos Default: {string.Join( " | ", defaultVerbs) }");
 
             //TODO: UseFirstClassAsDefault, o metodo que pregunta Clase Default
-            //Retorno dfe valor por default si fue definido
-            /*if (args.Length == 0)
-            {
-                if (defaultVerb == null)
-                    throw new NotDefaultVerbException("No especificó ningun verbo como Default");
-                else
-                    return Parse<defaultVerb>(args); ;
-            }
-            */
-            if (args.Length == 0)
-                throw new NotDefaultVerbException("No especificó ningun verbo como Default");
+            //Retorno de valor por default si fue definido
+            //if (args.Length == 0)
+            //{
+            //    if (defaultVerbs.Count == 0)
+            //        throw new NotDefaultVerbException("Debe especificar un verbo en la linea de comandos");
+            //    else
+            //    {
+            //        //TODO: Recorrer cada TX en busca del primer default y llamo a Parse con su tipo.
+
+            //    } 
+            //}
+
+            //if (args.Length == 0) throw new NotDefaultVerbException("No especificó ningun verbo como Default");
 
             string searchedVerb = args[0];
 
-            //Tambien corresponde a la funcion de Verbo por default
-            //if (searchedVerb.Trim().StartsWith("--") || searchedVerb.Trim().StartsWith("-"))
-            //    throw new NotDefaultVerbException("No especificó ningun verbo como Default");
+            if (searchedVerb.Trim().StartsWith("--") || searchedVerb.Trim().StartsWith("-"))
+                throw new UnknownVerbException($"{searchedVerb} no es un nombre de verbo valido. Debe especificar alguno de los siguientes: {string.Join(" | ", verbsAvailable)}");
 
             List<string> argsList = args.ToList();
             argsList.RemoveAt(0);
@@ -76,21 +83,21 @@ namespace CommandParser
             else if (VerbHelper.CheckIfVerbIsInClass<T2>(searchedVerb))
                 return Parse<T2>(args);
             else
-                throw new UnknownVerbException($"No se encontró clase que implemente el verbo {searchedVerb}");
+                throw new UnknownVerbException($"{searchedVerb} no es un nombre de verbo valido. Debe especificar alguno de los siguientes: {string.Join(" | ", verbsAvailable)}");
         }
 
 
         private static bool IsHelpRequested(List<string> CLI_Arguments)
         {
-            if (   CLI_Arguments.IndexOf("-h") != -1 
-                || CLI_Arguments.IndexOf("--help") != -1 
+            if (CLI_Arguments.IndexOf("-h") != -1
+                || CLI_Arguments.IndexOf("--help") != -1
                 || CLI_Arguments.IndexOf("/?") != -1
-                || CLI_Arguments.IndexOf("-help") != -1 )
+                || CLI_Arguments.IndexOf("-help") != -1)
             {
                 return true;
             }
             else
-            { 
+            {
                 return false;
             }
         }

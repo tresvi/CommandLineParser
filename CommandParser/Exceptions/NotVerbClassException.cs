@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CommandParser.Exceptions
 {
-    public class NotVerbClassException: CommandParserException
+    public class NotVerbClassException : CommandParserException
     {
         public NotVerbClassException() { }
         public NotVerbClassException(string message) : base(message) { }

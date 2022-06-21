@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    public class RequiredParameterNotFoundException: CommandParserException
+    public class RequiredParameterNotFoundException : CommandParserException
     {
         public RequiredParameterNotFoundException() { }
         public RequiredParameterNotFoundException(string message) : base(message) { }

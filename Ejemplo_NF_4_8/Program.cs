@@ -10,7 +10,7 @@ namespace Ejemplo_NF_4_8
         {
             try
             {
-                object parametro = CommandLine.Parse<Parameters, int>(args);
+                //object parametro = CommandLine.Parse<Parameters, int>(args);
 
                 Parameters parametros = CommandLine.Parse<Parameters>(args);
                 Console.WriteLine(parametros?.ToString());

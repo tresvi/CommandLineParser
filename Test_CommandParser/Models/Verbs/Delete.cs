@@ -1,6 +1,4 @@
 ﻿using CommandParser.Attributtes;
-using CommandParser.DecoratorAttributes;
-using CommandParser.DecoratorAttributes.DecoratorFormatterAttributes;
 
 namespace Test_CommandParser.Models.Verbs
 {

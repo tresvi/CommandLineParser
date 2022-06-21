@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    internal class RepeatedArgumentException: CommandParserException
+    internal class RepeatedArgumentException : CommandParserException
     {
         public RepeatedArgumentException() { }
         public RepeatedArgumentException(string message) : base(message) { }

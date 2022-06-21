@@ -11,7 +11,7 @@ namespace CommandParser.DecoratorAttributes.DecoratorFormatterAttributes
         public string Format { get; set; }
 
         public DecoratorFormatterAttributeBase(string format)
-        { 
+        {
             this.Format = format;
         }
 

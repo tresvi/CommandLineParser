@@ -2,14 +2,12 @@
 using CommandParser.Exceptions;
 using NUnit.Framework;
 using System;
-using System.IO;
-using Test_CommandParser.Models;
 using Test_CommandParser.Models.Verbs;
 
 namespace Test_CommandParser
 {
     [TestFixture]
-    public class CommandLine_T1_T2_WithVerbs_Test 
+    public class CommandLine_T1_T2_WithVerbs_Test
     {
         static Add? _addTest;
         static Edit? _editTest;
@@ -18,7 +16,7 @@ namespace Test_CommandParser
         public void Setup()
         {
             _addTest = new Add() { Directory = @"C:\Temp\", Nombre = "Salida.txt" };
-            _editTest = new Edit() { File= @"C:\Temp\Salida.txt", FechaEdicion = new DateTime(2021, 12, 29)  };
+            _editTest = new Edit() { File = @"C:\Temp\Salida.txt", FechaEdicion = new DateTime(2021, 12, 29) };
         }
 
         [TestCase(@"add --directory C:\Temp\ -n Salida.txt", "add")]
@@ -39,7 +37,7 @@ namespace Test_CommandParser
                 Assert.AreEqual(_editTest?.FechaEdicion, ((Edit)actualObject).FechaEdicion);
             }
             else
-                throw new Exception("Verbo desconocido, revise el caso de uso");
+                throw new Exception($"Verbo \"{expectedVerb}\" desconocido, revise el caso de uso");
         }
 
 

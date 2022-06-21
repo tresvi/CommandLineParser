@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CommandParser.Exceptions
 {
-    public class DirectoryNotExistsException: CommandParserException
+    public class DirectoryNotExistsException : CommandParserException
     {
         public DirectoryNotExistsException() { }
         public DirectoryNotExistsException(string message) : base(message) { }

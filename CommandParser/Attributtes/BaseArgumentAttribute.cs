@@ -1,5 +1,4 @@
-﻿using CommandParser.Exceptions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -13,7 +12,7 @@ namespace CommandParser.Attributtes
         public bool NotFound;
     }
 
-    public abstract class BaseArgumentAttribute: Attribute
+    public abstract class BaseArgumentAttribute : Attribute
     {
         public string Keyword { get; set; }
         public string ShortKeyword { get; set; }

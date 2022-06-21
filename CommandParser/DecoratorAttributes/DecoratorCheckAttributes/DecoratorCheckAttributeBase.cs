@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace CommandParser.DecoratorAttributes
 {
-    public abstract class DecoratorCheckAttributeBase: Attribute
+    public abstract class DecoratorCheckAttributeBase : Attribute
     {
         internal abstract bool Check(Argument argument, PropertyInfo property);
     }
