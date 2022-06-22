@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace CommandParser.Attributtes
+namespace CommandParser.Attributtes.Keywords
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class FlagAttribute : BaseArgumentAttribute
@@ -53,7 +53,7 @@ namespace CommandParser.Attributtes
                 return keyword;
             }
 
-            if (matchCounter > 1) throw new RepeatedArgumentException($"El flag {this.Keyword}/{this.ShortKeyword} fue definido mas de una vez");
+            if (matchCounter > 1) throw new RepeatedKeywordDefinitionException($"El flag {this.Keyword}/{this.ShortKeyword} fue definido mas de una vez");
 
             return keyword;
         }

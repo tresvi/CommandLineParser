@@ -1,6 +1,6 @@
-﻿using CommandParser.Attributtes;
-using CommandParser.DecoratorAttributes;
-using CommandParser.DecoratorAttributes.DecoratorFormatterAttributes;
+﻿using CommandParser.Attributes.Formatter;
+using CommandParser.Attributes.Validation;
+using CommandParser.Attributtes.Keywords;
 using System;
 using System.Reflection;
 using System.Text;

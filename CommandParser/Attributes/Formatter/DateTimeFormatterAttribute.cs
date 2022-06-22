@@ -1,10 +1,11 @@
 ﻿using CommandParser.Attributtes;
+using CommandParser.Attributtes.Keywords;
 using CommandParser.Exceptions;
 using System;
 using System.Globalization;
 using System.Reflection;
 
-namespace CommandParser.DecoratorAttributes.DecoratorFormatterAttributes
+namespace CommandParser.Attributes.Formatter
 {
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]

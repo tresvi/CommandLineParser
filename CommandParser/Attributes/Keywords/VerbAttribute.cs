@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CommandParser.Attributtes
+namespace CommandParser.Attributtes.Keywords
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class VerbAttribute : Attribute

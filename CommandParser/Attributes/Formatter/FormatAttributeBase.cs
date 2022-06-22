@@ -1,8 +1,9 @@
 ﻿using CommandParser.Attributtes;
+using CommandParser.Attributtes.Keywords;
 using System;
 using System.Reflection;
 
-namespace CommandParser.DecoratorAttributes.DecoratorFormatterAttributes
+namespace CommandParser.Attributes.Formatter
 {
     //No se podra definir mas de un atributo de formato por property.
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]

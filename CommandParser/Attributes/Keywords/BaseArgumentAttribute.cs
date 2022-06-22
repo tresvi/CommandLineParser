@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace CommandParser.Attributtes
+namespace CommandParser.Attributtes.Keywords
 {
     internal struct Argument
     {
@@ -12,6 +12,8 @@ namespace CommandParser.Attributtes
         public bool NotFound;
     }
 
+
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public abstract class BaseArgumentAttribute : Attribute
     {
         public string Keyword { get; set; }

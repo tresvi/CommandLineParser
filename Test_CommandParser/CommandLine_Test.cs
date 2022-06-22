@@ -1,5 +1,5 @@
 using CommandParser;
-using CommandParser.Attributtes;
+using CommandParser.Attributtes.Keywords;
 using CommandParser.Exceptions;
 using NUnit.Framework;
 using System;

@@ -1,13 +1,14 @@
 ﻿using CommandParser.Attributtes;
+using CommandParser.Attributtes.Keywords;
 using CommandParser.Exceptions;
 using System;
 using System.IO;
 using System.Reflection;
 
-namespace CommandParser.DecoratorAttributes
+namespace CommandParser.Attributes.Validation
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    public class FileNotExistsAttribute : DecoratorCheckAttributeBase
+    public class FileNotExistsAttribute : ValidationAttributeBase
     {
         internal override bool Check(Argument argument, PropertyInfo property)
         {
@@ -17,5 +18,6 @@ namespace CommandParser.DecoratorAttributes
 
             return true;
         }
+
     }
 }

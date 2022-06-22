@@ -1,5 +1,5 @@
-﻿using CommandParser.Attributtes;
-using CommandParser.DecoratorAttributes.DecoratorFormatterAttributes;
+﻿using CommandParser.Attributes.Formatter;
+using CommandParser.Attributtes.Keywords;
 using System;
 
 namespace Test_CommandParser.Models.Verbs

@@ -1,12 +1,11 @@
-﻿using CommandParser.DecoratorAttributes;
-using CommandParser.DecoratorAttributes.DecoratorFormatterAttributes;
+﻿using CommandParser.Attributes.Formatter;
+using CommandParser.Attributes.Validation;
 using CommandParser.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
-namespace CommandParser.Attributtes
+namespace CommandParser.Attributtes.Keywords
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class OptionAttribute : BaseArgumentAttribute
@@ -23,22 +22,22 @@ namespace CommandParser.Attributtes
 
         internal override void ParseAndAssign(PropertyInfo property, object targetObject, List<string> CLI_Arguments, ref List<string> ControlCLI_Arguments)
         {
-            //Argument argument = DetectKeyword(CLI_Arguments);
-            Argument argument = DetectKeyword(ControlCLI_Arguments);
+            ////Argument argument = DetectKeyword(CLI_Arguments);
+            //Argument argument = DetectKeyword(ControlCLI_Arguments);
 
-            if (argument.NotFound)
-            {
-                if (this.IsRequired)
-                    throw new RequiredParameterNotFoundException($"El parametro requerido {this.Keyword}/{this.ShortKeyword} no fue definido en la linea de comando");
-                else
-                    return;
-            }
+            //if (argument.NotFound)
+            //{
+            //    if (this.IsRequired)
+            //        throw new RequiredParameterNotFoundException($"El parametro requerido {this.Keyword}/{this.ShortKeyword} no fue definido en la linea de comando");
+            //    else
+            //        return;
+            //}
 
-            object value = argument.Value;
+            //object value = argument.Value;
 
             foreach (Attribute attrib in property.GetCustomAttributes())
             {
-                if (attrib is DecoratorCheckAttributeBase checkAttrib)              //Aplica atributos que solo chequean el dato
+                if (attrib is ValidationAttributeBase checkAttrib)              //Aplica atributos que solo chequean el dato
                     checkAttrib.Check(argument, property);
                 else if (attrib is DecoratorFormatterAttributeBase formatterAttrib) //Aplica atributos que modifican el modifican (lo formatean)
                     value = formatterAttrib.ApplyFormat(argument, property);
@@ -49,6 +48,36 @@ namespace CommandParser.Attributtes
 
             SetValue(property, targetObject, value, argument.Name);
         }
+
+
+        //internal override void ParseAndAssign(PropertyInfo property, object targetObject, List<string> CLI_Arguments, ref List<string> ControlCLI_Arguments)
+        //{
+        //    ////Argument argument = DetectKeyword(CLI_Arguments);
+        //    Argument argument = DetectKeyword(ControlCLI_Arguments);
+
+        //    if (argument.NotFound)
+        //    {
+        //        if (this.IsRequired)
+        //            throw new RequiredParameterNotFoundException($"El parametro requerido {this.Keyword}/{this.ShortKeyword} no fue definido en la linea de comando");
+        //        else
+        //            return;
+        //    }
+
+        //    object value = argument.Value;
+
+        //    foreach (Attribute attrib in property.GetCustomAttributes())
+        //    {
+        //        if (attrib is ValidationAttributeBase checkAttrib)              //Aplica atributos que solo chequean el dato
+        //            checkAttrib.Check(argument, property);
+        //        else if (attrib is DecoratorFormatterAttributeBase formatterAttrib) //Aplica atributos que modifican el modifican (lo formatean)
+        //            value = formatterAttrib.ApplyFormat(argument, property);
+        //    }
+
+        //    ControlCLI_Arguments.Remove(argument.Name);
+        //    ControlCLI_Arguments.Remove(argument.Value);
+
+        //    SetValue(property, targetObject, value, argument.Name);
+        //}
 
 
         internal override Argument DetectKeyword(List<string> CLI_Arguments)
@@ -73,7 +102,7 @@ namespace CommandParser.Attributtes
                 return keyword;
             }
 
-            if (matchCounter > 1) throw new RepeatedArgumentException($"El argumento {this.Keyword}/{this.ShortKeyword} fue definido mas de una vez");
+            if (matchCounter > 1) throw new RepeatedKeywordDefinitionException($"El argumento {this.Keyword}/{this.ShortKeyword} fue definido mas de una vez");
 
             //Detecta si falta el valor de un ultimo parametro
             if (CLI_Arguments.Count < keyword.Index + 2) throw new ValueNotSpecifiedException($"El valor del argumento {keyword.Name} no fue especificado");

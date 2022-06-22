@@ -1,5 +1,6 @@
-﻿using CommandParser.Attributtes;
-using CommandParser.DecoratorAttributes;
+﻿using CommandParser.Attributes.Validation;
+using CommandParser.Attributtes.Keywords;
+
 
 namespace Test_CommandParser.Models
 {
