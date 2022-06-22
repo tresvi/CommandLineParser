@@ -3,16 +3,14 @@ using CommandParser.DecoratorAttributes.DecoratorFormatterAttributes;
 using CommandParser.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace CommandParser.Attributtes
 {
-
-    //[Option("i", "input", Required = true, HelpText = "Input file to read.")]
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class OptionAttribute : BaseArgumentAttribute
     {
-
         public string DefaultValue { get; set; }
 
 
@@ -25,7 +23,8 @@ namespace CommandParser.Attributtes
 
         internal override void ParseAndAssign(PropertyInfo property, object targetObject, List<string> CLI_Arguments, ref List<string> ControlCLI_Arguments)
         {
-            Argument argument = DetectKeyword(CLI_Arguments);
+            //Argument argument = DetectKeyword(CLI_Arguments);
+            Argument argument = DetectKeyword(ControlCLI_Arguments);
 
             if (argument.NotFound)
             {
@@ -81,8 +80,10 @@ namespace CommandParser.Attributtes
 
             //Detecta si falta el valor de un parametro que no es el ultimo
             keyword.Value = CLI_Arguments[keyword.Index + 1];
-            if (keyword.Value.StartsWith("--") || keyword.Value.StartsWith("-"))
-                throw new ValueNotSpecifiedException($"El valor del argumento {keyword.Name} no fue especifica");
+
+            //TODO: Esto imposibilita que se puedan pasar valores que comeincen con "--". Definir si esto esta del todo bien en proximas versiones
+            // if (keyword.Value.StartsWith("--")  || keyword.Value.StartsWith("-"))    //La ultima condicion, imposibilita leer nros negativos
+            //     throw new ValueNotSpecifiedException($"El valor del argumento {keyword.Name} no fue especificado");
 
             return keyword;
         }
@@ -100,101 +101,120 @@ namespace CommandParser.Attributtes
 
             string rawFieldContent = (string)value;
 
-            //Reviso si la asignacion se hace a algun tipo entero
-            string errorMessage = $"El parametro \"{argumentName}\" no acepta el valor \"{rawFieldContent}\" como valor entero válido";
+            //Reviso si la asignacion se hace a alguna property de algun tipo entero
+            string parseErrorMessage = $"El parametro \"{argumentName}\" no acepta el valor \"{rawFieldContent}\" como " +
+                $"valor entero válido. Verifique que el valor sea numerico y esté dentro del rango correspondiente";
 
-            if (property.PropertyType == typeof(byte))
+            if (property.PropertyType == typeof(char))
             {
-                if (!byte.TryParse(rawFieldContent, out byte parsedValue))
-                    throw new ParseValueException(errorMessage);
+                if (!char.TryParse(rawFieldContent, out char parsedValue)) throw new ParseValueException(parseErrorMessage);
 
                 property.SetValue(targetObject, parsedValue);
+                return;
+            }
+            else if (property.PropertyType == typeof(byte))
+            {
+                if (!byte.TryParse(rawFieldContent, out byte parsedValue)) throw new ParseValueException(parseErrorMessage);
+
+                property.SetValue(targetObject, parsedValue);
+                return;
             }
             else if (property.PropertyType == typeof(sbyte))
             {
-                if (!sbyte.TryParse(rawFieldContent, out sbyte valorTemp))
-                    throw new ParseValueException(errorMessage);
+                if (!sbyte.TryParse(rawFieldContent, out sbyte valorTemp)) throw new ParseValueException(parseErrorMessage);
 
                 property.SetValue(targetObject, valorTemp);
+                return;
             }
             else if (property.PropertyType == typeof(short))
             {
-                if (!short.TryParse(rawFieldContent, out short parsedValue))
-                    throw new ParseValueException(errorMessage);
+                if (!short.TryParse(rawFieldContent, out short parsedValue)) throw new ParseValueException(parseErrorMessage);
 
                 property.SetValue(targetObject, parsedValue);
+                return;
             }
             else if (property.PropertyType == typeof(ushort))
             {
-                if (!ushort.TryParse(rawFieldContent, out ushort valorTemp))
-                    throw new ParseValueException(errorMessage);
+                if (!ushort.TryParse(rawFieldContent, out ushort valorTemp)) throw new ParseValueException(parseErrorMessage);
 
                 property.SetValue(targetObject, valorTemp);
+                return;
             }
             else if (property.PropertyType == typeof(int))
             {
-                if (!int.TryParse(rawFieldContent, out int parsedValue))
-                    throw new ParseValueException(errorMessage);
+                if (!int.TryParse(rawFieldContent, out int parsedValue)) throw new ParseValueException(parseErrorMessage);
 
                 property.SetValue(targetObject, parsedValue);
+                return;
             }
             else if (property.PropertyType == typeof(uint))
             {
-                if (!uint.TryParse(rawFieldContent, out uint valorTemp))
-                    throw new ParseValueException(errorMessage);
+                if (!uint.TryParse(rawFieldContent, out uint valorTemp)) throw new ParseValueException(parseErrorMessage);
 
                 property.SetValue(targetObject, valorTemp);
+                return;
             }
             else if (property.PropertyType == typeof(long))
             {
-                if (!long.TryParse(rawFieldContent, out long valorTemp))
-                    throw new ParseValueException(errorMessage);
+                if (!long.TryParse(rawFieldContent, out long valorTemp)) throw new ParseValueException(parseErrorMessage);
 
                 property.SetValue(targetObject, valorTemp);
+                return;
             }
             else if (property.PropertyType == typeof(ulong))
             {
                 if (!ulong.TryParse(rawFieldContent, out ulong valorTemp))
-                    throw new ParseValueException(errorMessage);
-
+                    throw new ParseValueException(parseErrorMessage);
                 property.SetValue(targetObject, valorTemp);
+                return;
             }
 
-            //Reviso si la asignacion se hace a algun tipo flotante
-            errorMessage = $"El valor {rawFieldContent} no puede ser reconocido como tipo decimal";
+
+            //Reviso si la asignacion se hace a una property de tipo punto flotante
+            parseErrorMessage = $"El parametro \"{argumentName}\" no acepta el valor \"{rawFieldContent}\" como " +
+                $"valor decimal válido. Verifique que el valor sea numerico y esté dentro del rango correspondiente";
 
             if (property.PropertyType == typeof(float))
             {
-                if (!float.TryParse(rawFieldContent, out float valorTemp))
-                    throw new ParseValueException(errorMessage);
+                if (!float.TryParse(rawFieldContent, out float valorTemp)) throw new ParseValueException(parseErrorMessage);
                 property.SetValue(targetObject, valorTemp);
+                return;
             }
             else if (property.PropertyType == typeof(double))
             {
-                if (!double.TryParse(rawFieldContent, out double valorTemp))
-                    throw new ParseValueException(errorMessage);
+                if (!double.TryParse(rawFieldContent, out double valorTemp)) throw new ParseValueException(parseErrorMessage);
                 property.SetValue(targetObject, valorTemp);
+                return;
             }
             else if (property.PropertyType == typeof(decimal))
             {
-                if (!decimal.TryParse(rawFieldContent, out decimal valorTemp))
-                    throw new ParseValueException(errorMessage);
+                if (!decimal.TryParse(rawFieldContent, out decimal valorTemp)) throw new ParseValueException(parseErrorMessage);
                 property.SetValue(targetObject, valorTemp);
+                return;
             }
 
             //Reviso si la asignacion se hace a un booleano
-            errorMessage = $"El valor {rawFieldContent} no puede ser reconocido como tipo booleano";
+            parseErrorMessage = $"El valor {rawFieldContent} no puede ser reconocido como tipo booleano. " +
+                $"Valores Validos: true, false, YES, Y, NO, N, SI, S (case insensitive)";
 
             if (property.PropertyType == typeof(bool))
             {
                 rawFieldContent = rawFieldContent.ToUpper().Trim();
 
-                if (rawFieldContent == "SI" || rawFieldContent == "YES" || rawFieldContent == "TRUE")
+                if (rawFieldContent == "SI" || rawFieldContent == "YES" || rawFieldContent == "TRUE" || 
+                    rawFieldContent == "S" || rawFieldContent == "Y")
+                {
                     property.SetValue(targetObject, true);
-                else if (rawFieldContent == "NO" || rawFieldContent == "FALSE")
+                    return;
+                }
+                else if (rawFieldContent == "NO" || rawFieldContent == "FALSE" || 
+                    rawFieldContent == "N" || rawFieldContent == "F")
+                {
                     property.SetValue(targetObject, false);
+                    return;
+                }
                 else
-                    throw new ParseValueException(errorMessage);
+                    throw new ParseValueException(parseErrorMessage);
             }
 
             throw new ParseValueException($"El parametro \"{argumentName}\" de valor \"{rawFieldContent}\" se esta asignando " +
@@ -202,5 +222,4 @@ namespace CommandParser.Attributtes
         }
 
     }
-
 }

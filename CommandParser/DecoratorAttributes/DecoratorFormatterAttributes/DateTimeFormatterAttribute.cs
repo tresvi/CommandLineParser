@@ -20,7 +20,8 @@ namespace CommandParser.DecoratorAttributes.DecoratorFormatterAttributes
             if (DateTime.TryParseExact(argument.Value.Trim(), this.Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fecha))
                 return fecha;
             else
-                throw new InvalidFormatException($"El valor del argumento {argument.Name} no corresponde al formato de fecha especificado: {this.Format}");
+                throw new InvalidFormatException($"El valor del argumento {argument.Name} no corresponde al formato de fecha especificado: {this.Format}, " +
+                    $"o bien el valor del dato proporcionado \"{argument.Value}\" es inválido como fecha");
         }
     }
 

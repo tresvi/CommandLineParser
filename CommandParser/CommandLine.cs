@@ -9,6 +9,7 @@ using System.Text;
 
 namespace CommandParser
 {
+    //TODO: Arreglar metodo Help para que soporte multiclase.
     //TODO: Agregar un metodo de validacion de estrucura de las clases. Que no haya nombres ni nombres cortos repetidos dentro de una misma clase.
     //TODO: Agregar un metodo de validacion de clases verbo. que ambas no repitan el mismo verbo.
     //TODO: Analizar la posibilidad de definir un verbo por default (que se tome en caso de que no se escriba nada) para futuras versiones.
