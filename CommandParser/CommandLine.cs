@@ -24,40 +24,24 @@ namespace CommandParser
 
             if (IsHelpRequested(CLI_Arguments))
             {
-                PrintHelp(CLI_Arguments, targetObject);
+                PrintHelp(targetObject);
                 return default(T);
             }
-            
-            List<string> ControlCLI_Arguments = new List<string>(CLI_Arguments);
+           
             List<string> keywordsFound = new List<string>();
+            BaseArgumentAttribute attribute;
+            PropertyInfo property;
 
-            BaseArgumentAttribute attribute = null;
-            PropertyInfo property = null;
-
-          //  for(int i = 0; i < CLI_Arguments.Count; i++)
             while (CLI_Arguments.Count != 0)
             {
                 string searchedKeyword = CLI_Arguments[0];
                 attribute = FindMatchKeywordVsAttribute(searchedKeyword, targetObject, out property);
-                attribute.ParseAndAssign(property, targetObject, ref CLI_Arguments); //, ref ControlCLI_Arguments);
+                attribute.ParseAndAssign(property, targetObject, ref CLI_Arguments);
                 keywordsFound.Add(searchedKeyword);
             }
 
-            CheckRequiredParameters(keywordsFound, targetObject);
-
-            /*
-            foreach (PropertyInfo property in targetObject.GetType().GetProperties())
-            {
-                foreach (BaseArgumentAttribute attribute in property.GetCustomAttributes(typeof(BaseArgumentAttribute), true))
-                {
-                    attribute.ParseAndAssign(property, targetObject, CLI_Arguments, ref ControlCLI_Arguments);
-                }
-            }
-            */
-
-            //if (ControlCLI_Arguments.Count > 0)
-            //    throw new ArgumentException($"Se proporcionaron parametros desconocidos: {string.Join(" & ", ControlCLI_Arguments)}");
-
+            CheckRequiredOptions(keywordsFound, targetObject);
+            InitializeFlagsInFalse(targetObject);
             return targetObject;
         }
 
@@ -91,13 +75,13 @@ namespace CommandParser
         }
 
 
-        private static void CheckRequiredParameters(List<string> keywordsFound, object targetObject)
+        private static void CheckRequiredOptions(List<string> keywordsFound, object targetObject)
         {
             List<BaseArgumentAttribute> requiredAttributes = new List<BaseArgumentAttribute>();
 
             foreach (PropertyInfo property in targetObject.GetType().GetProperties())
             {
-                foreach (BaseArgumentAttribute attribute in property.GetCustomAttributes(typeof(BaseArgumentAttribute), true))
+                foreach (OptionAttribute attribute in property.GetCustomAttributes(typeof(OptionAttribute), true))
                 {
                     if (attribute.IsRequired) requiredAttributes.Add(attribute);
                 }
@@ -107,6 +91,17 @@ namespace CommandParser
             {
                 if (!keywordsFound.Contains(attribute.Keyword) && !keywordsFound.Contains(attribute.ShortKeyword))
                     throw new RequiredParameterNotFoundException($"No se encontró definicion para el parámetro requerido: \"{attribute.Keyword} / {attribute.ShortKeyword}\"");
+            }
+        }
+
+        private static void InitializeFlagsInFalse(object targetObject)
+        {
+            foreach (PropertyInfo property in targetObject.GetType().GetProperties())
+            {
+                foreach (FlagAttribute attribute in property.GetCustomAttributes(typeof(FlagAttribute), true))
+                {
+                    attribute.Clear(targetObject, property);
+                }
             }
         }
 
@@ -170,7 +165,7 @@ namespace CommandParser
         }
 
 
-        private static void PrintHelp(List<string> CLI_Arguments, object targetObject)
+        private static void PrintHelp(object targetObject)
         {
 
             StringBuilder sb = new StringBuilder();

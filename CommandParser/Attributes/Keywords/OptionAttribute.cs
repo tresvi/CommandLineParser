@@ -11,31 +11,18 @@ namespace CommandParser.Attributtes.Keywords
     public class OptionAttribute : BaseArgumentAttribute
     {
         public string DefaultValue { get; set; }
-
+        public bool IsRequired { get; set; }
 
         public OptionAttribute(string keyword, string shortKeyword, bool isRequired, string defaultValue = "", string helpText = "")
-            : base(keyword, shortKeyword, isRequired, helpText)
+            : base(keyword, shortKeyword, helpText)
         {
             DefaultValue = defaultValue;
+            IsRequired = isRequired;
         }
 
 
-        // internal override void ParseAndAssign(int keywordIndex, PropertyInfo property, object targetObject, List<string> CLI_Arguments, ref List<string> ControlCLI_Arguments)
-        internal override void ParseAndAssign(PropertyInfo property, object targetObject, ref List<string> CLI_Arguments)
+       internal override void ParseAndAssign(PropertyInfo property, object targetObject, ref List<string> CLI_Arguments)
         {
-            ////Argument argument = DetectKeyword(CLI_Arguments);
-            //Argument argument = DetectKeyword(ControlCLI_Arguments);
-
-            //if (argument.NotFound)
-            //{
-            //    if (this.IsRequired)
-            //        throw new RequiredParameterNotFoundException($"El parametro requerido {this.Keyword}/{this.ShortKeyword} no fue definido en la linea de comando");
-            //    else
-            //        return;
-            //}
-
-            //object value = argument.Value;
-
             string keyword = CLI_Arguments[0];
 
             if (CLI_Arguments.Count < 2)
@@ -55,82 +42,11 @@ namespace CommandParser.Attributtes.Keywords
             }
 
             CLI_Arguments.RemoveRange(0, 2);
-            //ControlCLI_Arguments.Remove(argument.Name);
-            //ControlCLI_Arguments.Remove(argument.Value);
-
-            SetValue(property, targetObject, formattedValue, parameter.Key);
+            SetValue(targetObject, property, formattedValue, parameter.Key);
         }
 
 
-        //internal override void ParseAndAssign(PropertyInfo property, object targetObject, List<string> CLI_Arguments, ref List<string> ControlCLI_Arguments)
-        //{
-        //    ////Argument argument = DetectKeyword(CLI_Arguments);
-        //    Argument argument = DetectKeyword(ControlCLI_Arguments);
-
-        //    if (argument.NotFound)
-        //    {
-        //        if (this.IsRequired)
-        //            throw new RequiredParameterNotFoundException($"El parametro requerido {this.Keyword}/{this.ShortKeyword} no fue definido en la linea de comando");
-        //        else
-        //            return;
-        //    }
-
-        //    object value = argument.Value;
-
-        //    foreach (Attribute attrib in property.GetCustomAttributes())
-        //    {
-        //        if (attrib is ValidationAttributeBase checkAttrib)              //Aplica atributos que solo chequean el dato
-        //            checkAttrib.Check(argument, property);
-        //        else if (attrib is DecoratorFormatterAttributeBase formatterAttrib) //Aplica atributos que modifican el modifican (lo formatean)
-        //            value = formatterAttrib.ApplyFormat(argument, property);
-        //    }
-
-        //    ControlCLI_Arguments.Remove(argument.Name);
-        //    ControlCLI_Arguments.Remove(argument.Value);
-
-        //    SetValue(property, targetObject, value, argument.Name);
-        //}
-
-
-        //internal override Parameter DetectKeyword(List<string> CLI_Arguments)
-        //{
-        //    Parameter keyword = new Parameter() { NotFound = true };
-        //    int matchCounter = 0;
-
-        //    for (int i = 0; i < CLI_Arguments.Count; i++)
-        //    {
-        //        if (CLI_Arguments[i] == this.Keyword || CLI_Arguments[i] == this.ShortKeyword)
-        //        {
-        //            keyword.Name = CLI_Arguments[i];
-        //            keyword.Index = i;
-        //            keyword.NotFound = false;
-        //            matchCounter++;
-        //        }
-        //    }
-
-        //    if (keyword.NotFound)
-        //    {
-        //        keyword.Name = this.Keyword;
-        //        return keyword;
-        //    }
-
-        //    if (matchCounter > 1) throw new RepeatedKeywordDefinitionException($"El argumento {this.Keyword}/{this.ShortKeyword} fue definido mas de una vez");
-
-        //    //Detecta si falta el valor de un ultimo parametro
-        //    if (CLI_Arguments.Count < keyword.Index + 2) throw new ValueNotFoundException($"El valor del argumento {keyword.Name} no fue especificado");
-
-        //    //Detecta si falta el valor de un parametro que no es el ultimo
-        //    keyword.Value = CLI_Arguments[keyword.Index + 1];
-
-        //    //TODO: Esto imposibilita que se puedan pasar valores que comeincen con "--". Definir si esto esta del todo bien en proximas versiones
-        //    // if (keyword.Value.StartsWith("--")  || keyword.Value.StartsWith("-"))    //La ultima condicion, imposibilita leer nros negativos
-        //    //     throw new ValueNotSpecifiedException($"El valor del argumento {keyword.Name} no fue especificado");
-
-        //    return keyword;
-        //}
-
-
-        private void SetValue(PropertyInfo property, object targetObject, object value, string argumentName)
+        private void SetValue(object targetObject, PropertyInfo property, object value, string argumentName)
         {
             if (value == null) return;
 
@@ -210,7 +126,6 @@ namespace CommandParser.Attributtes.Keywords
                 return;
             }
 
-
             //Reviso si la asignacion se hace a una property de tipo punto flotante
             parseErrorMessage = $"El parametro \"{argumentName}\" no acepta el valor \"{rawFieldContent}\" como " +
                 $"valor decimal válido. Verifique que el valor sea numerico y esté dentro del rango correspondiente";
@@ -262,9 +177,5 @@ namespace CommandParser.Attributtes.Keywords
                 $"a la \"{property.Name}\" de tipo {property.PropertyType.Name} el cual no es soportado por esta biblioteca");
         }
 
-        internal /*override*/ Parameter DetectKeyword(List<string> CLI_Arguments)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

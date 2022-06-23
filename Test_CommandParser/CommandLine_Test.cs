@@ -118,21 +118,6 @@ namespace Test_CommandParser
         }
 
 
-        [TestCase(@"--inputfile C:\Temp\Archivo.txt", "--outputfile", "-o")]
-        [TestCase(@"--outputfile C:\Logs\ddd", "--inputfile", "-i")]
-        public void Parse_Throw_RequiredParameterNotFound(string inputLine, string missingArgument, string missingShortArgument)
-        {
-            string[] args = inputLine.Split(' ');
-            RequiredParameterNotFoundException? exceptionDetalle = Assert.Throws<RequiredParameterNotFoundException>(() => CommandLine.Parse<Parameters>(args));
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(exceptionDetalle?.Message, Does.Contain(missingArgument));
-                Assert.That(exceptionDetalle?.Message, Does.Contain(missingShortArgument));
-            });
-        }
-
-
         [TestCase(@"--inputfile ..\Archivo.txt --outputdir ..\salida\")]
         public void Parse_FileAndDirectoryExists_OK(string inputLine)
         {
@@ -231,26 +216,58 @@ namespace Test_CommandParser
         }
 
 
-        [TestCase(@"--inputfile C:\Logs\salida.txt", "outputfile")]    //Se toma "--oputputfile..." como valor de --inputfile
-        [TestCase(@"--outputfile C:\Temp\Archivo.txt", "inputfile")]   //
-        //TODO:  //Esta salta como NotValueSpecifiedException. Cambiar el parser para que arranque leyendo la CLI de izq a der. y que esta de ReqParameterNotFoundException
-        //[TestCase(@"--outputfile --inputfile C:\Temp\Archivo.txt", "inputfile")]     //Esto tambien beneficiaria a la funcionalidad de verbo por default
-        public void Parse_Input_2_Param_ReqParameterNotFoundException(string inputLine, string parametroFaltante)
+        [TestCase(@"--inputfile C:\Temp\Archivo.txt", "--outputfile", "-o")]
+        [TestCase(@"--outputfile C:\Logs\ddd", "--inputfile", "-i")]
+        [TestCase(@"--name proc1 --outputfile C:\Logs\ddd", "--inputfile", "-i")]
+        [TestCase(@"--outputfile C:\Logs\ddd --name proc1", "--inputfile", "-i")]
+        public void Parse_Input_2_Param_Throw_RequiredParameterNotFound(string inputLine, string missingArgument, string missingShortArgument)
         {
             string[] args = inputLine.Split(' ');
-            RequiredParameterNotFoundException? exceptionDetalle = Assert.Throws<RequiredParameterNotFoundException>(() => CommandLine.Parse<Parameters_2_Prop_Required>(args));
+            RequiredParameterNotFoundException? exceptionDetalle = Assert.Throws<RequiredParameterNotFoundException>(() => CommandLine.Parse<Param_2_Prop_Req_1_Prop_NoReq>(args));
 
-            Assert.That(exceptionDetalle?.Message, Does.Contain(parametroFaltante));
+            Assert.Multiple(() =>
+            {
+                Assert.That(exceptionDetalle?.Message, Does.Contain(missingArgument));
+                Assert.That(exceptionDetalle?.Message, Does.Contain(missingShortArgument));
+            });
         }
 
 
-        //[TestCase(@"--inputfile --outputfile C:\Logs\salida.txt --name copia", "outputfile")]
-        //[TestCase(@"--inputfile C:\Temp\Archivo.txt --name copia --outputfile", "outputfile")]
+
+        [TestCase(@"--inputfile C:\Logs\salida.txt --outputfile", "outputfile")]
+        [TestCase(@"--inputfile C:\Temp\Archivo.txt --name copia --outputfile", "outputfile")]
         public void Parse_Input_3_Param_ValueNotSpecifiedException(string inputLine, string parametroFaltante)
         {
             string[] args = inputLine.Split(' ');
             ValueNotFoundException? exceptionDetalle = Assert.Throws<ValueNotFoundException>(() => CommandLine.Parse<Parameters_3_Prop_Required>(args));
             Assert.That(exceptionDetalle?.Message, Does.Contain(parametroFaltante));
+        }
+
+        [TestCase(@"--sendmail --inputfile C:\Temp\in.txt --outputfile C:\Temp\out.txt")]
+        [TestCase(@"--inputfile C:\Temp\in.txt --sendmail --outputfile C:\Temp\out.txt")]
+        [TestCase(@"--inputfile C:\Temp\in.txt --outputfile C:\Temp\out.txt --sendmail")]
+        [TestCase(@"--inputfile C:\Temp\in.txt --outputfile C:\Temp\out.txt")]
+        public void Parse_Input_ParamWithFlag(string inputLine)
+        {
+            Parameter_With_Flag expectedResult = new Parameter_With_Flag();
+            expectedResult.InputFile = @"C:\Temp\in.txt";
+            expectedResult.OutputFile = @"C:\Temp\out.txt";
+            expectedResult.SendMail = inputLine.Contains("--sendmail");
+
+            string[] args = inputLine.Split(' ');
+            Parameter_With_Flag parsedResult = CommandLine.Parse<Parameter_With_Flag>(args);
+
+            Assert.Multiple(() =>
+            {
+                foreach (PropertyInfo property in expectedResult.GetType().GetProperties())
+                {
+                    foreach (Attribute attribute in property.GetCustomAttributes(true))
+                    {
+                        if (!(attribute is OptionAttribute)) continue;
+                        Assert.AreEqual(property.GetValue(expectedResult), property.GetValue(parsedResult));
+                    }
+                }
+            });
         }
 
     }

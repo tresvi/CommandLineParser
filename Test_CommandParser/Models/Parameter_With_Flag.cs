@@ -1,17 +1,16 @@
-﻿using CommandParser.Attributes.Validation;
-using CommandParser.Attributtes.Keywords;
+﻿using CommandParser.Attributtes.Keywords;
 
 namespace Test_CommandParser.Models
 {
-    public class ParametroConFlag
+    internal class Parameter_With_Flag
     {
-        [FileExists]
         [Option("inputfile", "i", true, HelpText = "Archivo de entrada a ser procesado.")]
         public string? InputFile { get; set; }
 
-        // [DateTimeFormatter("ee")]
-        [DirectoryExists]
         [Option("outputfile", "o", true, HelpText = "Archivo de salida resultante del procesamiento.")]
         public string? OutputFile { get; set; }
+
+        [Flag("sendmail", "s", HelpText = "Indica si debe notificar por mail")]
+        public bool SendMail { get; set; }
     }
 }

@@ -15,7 +15,6 @@ namespace CommandParser.Attributes.Formatter
             this.Format = format;
         }
 
-        //!!internal abstract object ApplyFormat(Parameter argument, PropertyInfo property);
         internal abstract object ApplyFormat(KeyValuePair<string, string> parameter, PropertyInfo property);
     }
 }
