@@ -19,7 +19,8 @@ namespace Ejemplo_NF_4_8
 
             catch (RequiredParameterNotFoundException ex)
             {
-
+                Console.WriteLine($"ERROR: {ex.Message}");
+                Console.WriteLine("Fin Todo Mal!!");
             }
             catch (CommandParserException ex)
             {

@@ -20,7 +20,8 @@ namespace CommandParser.Attributtes.Keywords
         }
 
 
-        internal override void ParseAndAssign(PropertyInfo property, object targetObject, List<string> CLI_Arguments, ref List<string> ControlCLI_Arguments)
+        // internal override void ParseAndAssign(int keywordIndex, PropertyInfo property, object targetObject, List<string> CLI_Arguments, ref List<string> ControlCLI_Arguments)
+        internal override void ParseAndAssign(PropertyInfo property, object targetObject, ref List<string> CLI_Arguments)
         {
             ////Argument argument = DetectKeyword(CLI_Arguments);
             //Argument argument = DetectKeyword(ControlCLI_Arguments);
@@ -35,18 +36,29 @@ namespace CommandParser.Attributtes.Keywords
 
             //object value = argument.Value;
 
+            string keyword = CLI_Arguments[0];
+
+            if (CLI_Arguments.Count < 2)
+                throw new ValueNotFoundException($"No se especificó el valor del parámetro \"{keyword}\"");
+            
+            string value = CLI_Arguments[1];
+
+            KeyValuePair<string, string> parameter = new KeyValuePair<string, string>(keyword, value);
+            object formattedValue = value;
+
             foreach (Attribute attrib in property.GetCustomAttributes())
             {
                 if (attrib is ValidationAttributeBase checkAttrib)              //Aplica atributos que solo chequean el dato
-                    checkAttrib.Check(argument, property);
-                else if (attrib is DecoratorFormatterAttributeBase formatterAttrib) //Aplica atributos que modifican el modifican (lo formatean)
-                    value = formatterAttrib.ApplyFormat(argument, property);
+                    checkAttrib.Check(parameter, property);
+                else if (attrib is FormatterAttributeBase formatterAttrib) //Aplica atributos que modifican el modifican (lo formatean)
+                    formattedValue = formatterAttrib.ApplyFormat(parameter, property);
             }
 
-            ControlCLI_Arguments.Remove(argument.Name);
-            ControlCLI_Arguments.Remove(argument.Value);
+            CLI_Arguments.RemoveRange(0, 2);
+            //ControlCLI_Arguments.Remove(argument.Name);
+            //ControlCLI_Arguments.Remove(argument.Value);
 
-            SetValue(property, targetObject, value, argument.Name);
+            SetValue(property, targetObject, formattedValue, parameter.Key);
         }
 
 
@@ -80,42 +92,42 @@ namespace CommandParser.Attributtes.Keywords
         //}
 
 
-        internal override Argument DetectKeyword(List<string> CLI_Arguments)
-        {
-            Argument keyword = new Argument() { NotFound = true };
-            int matchCounter = 0;
+        //internal override Parameter DetectKeyword(List<string> CLI_Arguments)
+        //{
+        //    Parameter keyword = new Parameter() { NotFound = true };
+        //    int matchCounter = 0;
 
-            for (int i = 0; i < CLI_Arguments.Count; i++)
-            {
-                if (CLI_Arguments[i] == this.Keyword || CLI_Arguments[i] == this.ShortKeyword)
-                {
-                    keyword.Name = CLI_Arguments[i];
-                    keyword.Index = i;
-                    keyword.NotFound = false;
-                    matchCounter++;
-                }
-            }
+        //    for (int i = 0; i < CLI_Arguments.Count; i++)
+        //    {
+        //        if (CLI_Arguments[i] == this.Keyword || CLI_Arguments[i] == this.ShortKeyword)
+        //        {
+        //            keyword.Name = CLI_Arguments[i];
+        //            keyword.Index = i;
+        //            keyword.NotFound = false;
+        //            matchCounter++;
+        //        }
+        //    }
 
-            if (keyword.NotFound)
-            {
-                keyword.Name = this.Keyword;
-                return keyword;
-            }
+        //    if (keyword.NotFound)
+        //    {
+        //        keyword.Name = this.Keyword;
+        //        return keyword;
+        //    }
 
-            if (matchCounter > 1) throw new RepeatedKeywordDefinitionException($"El argumento {this.Keyword}/{this.ShortKeyword} fue definido mas de una vez");
+        //    if (matchCounter > 1) throw new RepeatedKeywordDefinitionException($"El argumento {this.Keyword}/{this.ShortKeyword} fue definido mas de una vez");
 
-            //Detecta si falta el valor de un ultimo parametro
-            if (CLI_Arguments.Count < keyword.Index + 2) throw new ValueNotSpecifiedException($"El valor del argumento {keyword.Name} no fue especificado");
+        //    //Detecta si falta el valor de un ultimo parametro
+        //    if (CLI_Arguments.Count < keyword.Index + 2) throw new ValueNotFoundException($"El valor del argumento {keyword.Name} no fue especificado");
 
-            //Detecta si falta el valor de un parametro que no es el ultimo
-            keyword.Value = CLI_Arguments[keyword.Index + 1];
+        //    //Detecta si falta el valor de un parametro que no es el ultimo
+        //    keyword.Value = CLI_Arguments[keyword.Index + 1];
 
-            //TODO: Esto imposibilita que se puedan pasar valores que comeincen con "--". Definir si esto esta del todo bien en proximas versiones
-            // if (keyword.Value.StartsWith("--")  || keyword.Value.StartsWith("-"))    //La ultima condicion, imposibilita leer nros negativos
-            //     throw new ValueNotSpecifiedException($"El valor del argumento {keyword.Name} no fue especificado");
+        //    //TODO: Esto imposibilita que se puedan pasar valores que comeincen con "--". Definir si esto esta del todo bien en proximas versiones
+        //    // if (keyword.Value.StartsWith("--")  || keyword.Value.StartsWith("-"))    //La ultima condicion, imposibilita leer nros negativos
+        //    //     throw new ValueNotSpecifiedException($"El valor del argumento {keyword.Name} no fue especificado");
 
-            return keyword;
-        }
+        //    return keyword;
+        //}
 
 
         private void SetValue(PropertyInfo property, object targetObject, object value, string argumentName)
@@ -250,5 +262,9 @@ namespace CommandParser.Attributtes.Keywords
                 $"a la \"{property.Name}\" de tipo {property.PropertyType.Name} el cual no es soportado por esta biblioteca");
         }
 
+        internal /*override*/ Parameter DetectKeyword(List<string> CLI_Arguments)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

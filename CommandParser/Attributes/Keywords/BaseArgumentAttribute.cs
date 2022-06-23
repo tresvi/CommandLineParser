@@ -4,12 +4,10 @@ using System.Reflection;
 
 namespace CommandParser.Attributtes.Keywords
 {
-    internal struct Argument
+    internal struct Parameter
     {
         public string Name;
-        public int Index;
         public string Value;
-        public bool NotFound;
     }
 
 
@@ -30,7 +28,8 @@ namespace CommandParser.Attributtes.Keywords
             IsRequired = isRequired;
         }
 
-        internal abstract Argument DetectKeyword(List<string> CLI_Arguments);
-        internal abstract void ParseAndAssign(PropertyInfo property, object targetObject, List<string> CLI_Arguments, ref List<string> ControlCLI_Arguments);
+        //  internal abstract Parameter DetectKeyword(List<string> CLI_Arguments);
+        //internal abstract void ParseAndAssign(int keywordIndex, PropertyInfo property, object targetObject, List<string> CLI_Arguments, ref List<string> ControlCLI_Arguments);
+        internal abstract void ParseAndAssign(PropertyInfo property, object targetObject, ref List<string> CLI_Arguments);
     }
 }

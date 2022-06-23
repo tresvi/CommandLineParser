@@ -16,47 +16,50 @@ namespace CommandParser.Attributtes.Keywords
             this.DefaultValue = defaultValue;
         }
 
-        internal override void ParseAndAssign(PropertyInfo property, object targetObject, List<string> CLI_Arguments, ref List<string> ControlCLI_Arguments)
+
+        //internal override void ParseAndAssign(int keywordIndex, PropertyInfo property, object targetObject, List<string> CLI_Arguments, ref List<string> ControlCLI_Arguments)
+        internal override void ParseAndAssign(PropertyInfo property, object targetObject, ref List<string> CLI_Arguments)
         {
             if (property.PropertyType != typeof(bool)) throw new WrongPropertyTypeException($"La propiedad de asignacion de un argumento flag ({property.Name}), debe ser de tipo booleano");
 
-            Argument argument = DetectKeyword(CLI_Arguments);
+            //Parameter argument = DetectKeyword(CLI_Arguments);
 
-            if (argument.NotFound)
-                property.SetValue(targetObject, false);
-            else
-                property.SetValue(targetObject, true);
+            //if (argument.NotFound)
+            //    property.SetValue(targetObject, false);
+            //else
+            //    property.SetValue(targetObject, true);
 
-            ControlCLI_Arguments.Remove(argument.Name);
+            //ControlCLI_Arguments.Remove(argument.Name);
         }
 
 
-        internal override Argument DetectKeyword(List<string> CLI_Arguments)
-        {
-            Argument keyword = new Argument() { NotFound = true };
-            int matchCounter = 0;
+        //!! internal override Parameter DetectKeyword(List<string> CLI_Arguments)
+        //internal Parameter DetectKeyword(List<string> CLI_Arguments)
+        //{
+        //    Parameter keyword = new Parameter() { NotFound = true };
+        //    int matchCounter = 0;
 
-            for (int i = 0; i < CLI_Arguments.Count; i++)
-            {
-                if (CLI_Arguments[i] == this.Keyword || CLI_Arguments[i] == this.ShortKeyword)
-                {
-                    keyword.Name = CLI_Arguments[i];
-                    keyword.Index = i;
-                    keyword.NotFound = false;
-                    matchCounter++;
-                }
-            }
+        //    for (int i = 0; i < CLI_Arguments.Count; i++)
+        //    {
+        //        if (CLI_Arguments[i] == this.Keyword || CLI_Arguments[i] == this.ShortKeyword)
+        //        {
+        //            keyword.Name = CLI_Arguments[i];
+        //            keyword.Index = i;
+        //            keyword.NotFound = false;
+        //            matchCounter++;
+        //        }
+        //    }
 
-            if (keyword.NotFound)
-            {
-                keyword.Name = this.Keyword;
-                return keyword;
-            }
+        //    if (keyword.NotFound)
+        //    {
+        //        keyword.Name = this.Keyword;
+        //        return keyword;
+        //    }
 
-            if (matchCounter > 1) throw new RepeatedKeywordDefinitionException($"El flag {this.Keyword}/{this.ShortKeyword} fue definido mas de una vez");
+        //    if (matchCounter > 1) throw new RepeatedKeywordDefinitionException($"El flag {this.Keyword}/{this.ShortKeyword} fue definido mas de una vez");
 
-            return keyword;
-        }
+        //    return keyword;
+        //}
 
     }
 }

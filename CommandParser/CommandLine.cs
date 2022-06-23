@@ -29,15 +29,21 @@ namespace CommandParser
             }
             
             List<string> ControlCLI_Arguments = new List<string>(CLI_Arguments);
+            List<string> keywordsFound = new List<string>();
 
             BaseArgumentAttribute attribute = null;
             PropertyInfo property = null;
 
-            foreach (string searchedKeyword in CLI_Arguments)
+          //  for(int i = 0; i < CLI_Arguments.Count; i++)
+            while (CLI_Arguments.Count != 0)
             {
+                string searchedKeyword = CLI_Arguments[0];
                 attribute = FindMatchKeywordVsAttribute(searchedKeyword, targetObject, out property);
-                attribute.ParseAndAssign(property, targetObject, CLI_Arguments, ref ControlCLI_Arguments);
+                attribute.ParseAndAssign(property, targetObject, ref CLI_Arguments); //, ref ControlCLI_Arguments);
+                keywordsFound.Add(searchedKeyword);
             }
+
+            CheckRequiredParameters(keywordsFound, targetObject);
 
             /*
             foreach (PropertyInfo property in targetObject.GetType().GetProperties())
@@ -48,8 +54,9 @@ namespace CommandParser
                 }
             }
             */
-            if (ControlCLI_Arguments.Count > 0)
-                throw new ArgumentException($"Se proporcionaron parametros desconocidos: {string.Join(" & ", ControlCLI_Arguments)}");
+
+            //if (ControlCLI_Arguments.Count > 0)
+            //    throw new ArgumentException($"Se proporcionaron parametros desconocidos: {string.Join(" & ", ControlCLI_Arguments)}");
 
             return targetObject;
         }
@@ -75,14 +82,33 @@ namespace CommandParser
             }
 
             if (matchCounter == 0)
-                throw new UnknownKeywordException($"Parámetro desconocido: \"{searchedKeyword}\"");
+                throw new UnknownParameterException($"Parámetro desconocido: \"{searchedKeyword}\"");
 
             if (matchCounter > 1)
-                 throw new RepeatedKeywordDefinitionException($"El parámetro \"{searchedKeyword}\" fue definido en mas de una Option en la clase \"{targetObject.GetType().Name}\"");
+                 throw new RepeatedParameterDefinitionException($"El parámetro \"{searchedKeyword}\" fue definido en mas de una Option en la clase \"{targetObject.GetType().Name}\"");
 
             return foundAttribute;
         }
 
+
+        private static void CheckRequiredParameters(List<string> keywordsFound, object targetObject)
+        {
+            List<BaseArgumentAttribute> requiredAttributes = new List<BaseArgumentAttribute>();
+
+            foreach (PropertyInfo property in targetObject.GetType().GetProperties())
+            {
+                foreach (BaseArgumentAttribute attribute in property.GetCustomAttributes(typeof(BaseArgumentAttribute), true))
+                {
+                    if (attribute.IsRequired) requiredAttributes.Add(attribute);
+                }
+            }
+
+            foreach (BaseArgumentAttribute attribute in requiredAttributes)
+            {
+                if (!keywordsFound.Contains(attribute.Keyword) && !keywordsFound.Contains(attribute.ShortKeyword))
+                    throw new RequiredParameterNotFoundException($"No se encontró definicion para el parámetro requerido: \"{attribute.Keyword} / {attribute.ShortKeyword}\"");
+            }
+        }
 
         public static object Parse<T1, T2>(string[] args)
             where T1 : new()

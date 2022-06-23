@@ -2,6 +2,7 @@
 using CommandParser.Attributtes.Keywords;
 using CommandParser.Exceptions;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 
@@ -9,20 +10,20 @@ namespace CommandParser.Attributes.Formatter
 {
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    public class DateTimeFormatterAttribute : DecoratorFormatterAttributeBase
+    public class DateTimeFormatterAttribute : FormatterAttributeBase
     {
         public DateTimeFormatterAttribute(string format) : base(format) { }
 
-        internal override object ApplyFormat(Argument argument, PropertyInfo property)
+        internal override object ApplyFormat(KeyValuePair<string, string> parameter, PropertyInfo property)
         {
             if (property.PropertyType != typeof(DateTime))
                 throw new InvalidadPropertyTypeException($"La propiedad de asignacion {property.Name} no es del tipo DateTime");
 
-            if (DateTime.TryParseExact(argument.Value.Trim(), this.Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fecha))
+            if (DateTime.TryParseExact(parameter.Value.Trim(), this.Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fecha))
                 return fecha;
             else
-                throw new InvalidFormatException($"El valor del argumento {argument.Name} no corresponde al formato de fecha especificado: {this.Format}, " +
-                    $"o bien el valor del dato proporcionado \"{argument.Value}\" es inválido como fecha");
+                throw new InvalidFormatException($"El valor del argumento {parameter.Key} no corresponde al formato de fecha especificado: {this.Format}, " +
+                    $"o bien el valor del dato proporcionado \"{parameter.Value}\" es inválido como fecha");
         }
     }
 

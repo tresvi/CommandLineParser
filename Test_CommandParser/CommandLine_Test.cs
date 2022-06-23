@@ -18,6 +18,9 @@ namespace Test_CommandParser
         {
         }
 
+
+
+
         [TestCase($"--string EstoEsunString --datetime 20191229 --byte 250 --sbyte 120 --short 32000 --ushort 65000 " +
             "--int 2147483000 --uint 4294967000 --long 9223372036854775000 --ulong 18223372036854775000 " +
             $"--float 2.2 --double 2.3 --decimal 2.4 --bool true")]
@@ -102,20 +105,22 @@ namespace Test_CommandParser
         }
 
 
-        [TestCase(@"--inputfile C:\Temp\Archivo.txt --outputfile C:\Logs\ddd --sungutrule hola chau otro")]
-        [TestCase(@"--sungutrule --inputfile C:\Temp\Archivo.txt --outputfile C:\Logs\ddd hola chau otro")]
-        [TestCase(@"--inputfile C:\Temp\Archivo.txt --sungutrule --outputfile C:\Logs\ddd hola chau otro")]
-        public void Parse_InputNotDeclaratedCommands(string inputLine)
+        [TestCase(@"--inputfile C:\Temp\Archivo.txt --outputfile C:\Logs\ddd --sungutrule hola chau otro", "--sungutrule")]
+        [TestCase(@"--sungutrule --inputfile C:\Temp\Archivo.txt --outputfile C:\Logs\ddd hola chau otro", "--sungutrule")]
+        [TestCase(@"--inputfile C:\Temp\Archivo.txt --sungutrule --outputfile C:\Logs\ddd otro chau otro", "--sungutrule")]
+        [TestCase(@"--inputfile C:\Temp\Archivo.txt --outputfile C:\Logs\ddd otro chau otro", "otro")]
+        [TestCase(@"--inputfile C:\Temp\Archivo.txt chau --outputfile C:\Logs\ddd otro", "chau")]
+        public void Parse_Throw_UnknownParameterException(string inputLine, string? firstUnknonwParameter)
         {
             string[] args = inputLine.Split(' ');
-            ArgumentException? exceptionDetalle = Assert.Throws<ArgumentException>(() => CommandLine.Parse<Parameters>(args));
-            Assert.AreEqual("Se proporcionaron parametros desconocidos: --sungutrule & hola & chau & otro", exceptionDetalle?.Message);
+            UnknownParameterException? exceptionDetalle = Assert.Throws<UnknownParameterException>(() => CommandLine.Parse<Parameters>(args));
+            Assert.That(exceptionDetalle?.Message, Does.Contain(firstUnknonwParameter));
         }
 
 
         [TestCase(@"--inputfile C:\Temp\Archivo.txt", "--outputfile", "-o")]
         [TestCase(@"--outputfile C:\Logs\ddd", "--inputfile", "-i")]
-        public void Parse_ArgumentNotFound(string inputLine, string missingArgument, string missingShortArgument)
+        public void Parse_Throw_RequiredParameterNotFound(string inputLine, string missingArgument, string missingShortArgument)
         {
             string[] args = inputLine.Split(' ');
             RequiredParameterNotFoundException? exceptionDetalle = Assert.Throws<RequiredParameterNotFoundException>(() => CommandLine.Parse<Parameters>(args));
@@ -226,7 +231,7 @@ namespace Test_CommandParser
         }
 
 
-        [TestCase(@"--inputfile --outputfile C:\Logs\salida.txt", "outputfile")]    //Se toma "--oputputfile..." como valor de --inputfile
+        [TestCase(@"--inputfile C:\Logs\salida.txt", "outputfile")]    //Se toma "--oputputfile..." como valor de --inputfile
         [TestCase(@"--outputfile C:\Temp\Archivo.txt", "inputfile")]   //
         //TODO:  //Esta salta como NotValueSpecifiedException. Cambiar el parser para que arranque leyendo la CLI de izq a der. y que esta de ReqParameterNotFoundException
         //[TestCase(@"--outputfile --inputfile C:\Temp\Archivo.txt", "inputfile")]     //Esto tambien beneficiaria a la funcionalidad de verbo por default
@@ -244,7 +249,7 @@ namespace Test_CommandParser
         public void Parse_Input_3_Param_ValueNotSpecifiedException(string inputLine, string parametroFaltante)
         {
             string[] args = inputLine.Split(' ');
-            ValueNotSpecifiedException? exceptionDetalle = Assert.Throws<ValueNotSpecifiedException>(() => CommandLine.Parse<Parameters_3_Prop_Required>(args));
+            ValueNotFoundException? exceptionDetalle = Assert.Throws<ValueNotFoundException>(() => CommandLine.Parse<Parameters_3_Prop_Required>(args));
             Assert.That(exceptionDetalle?.Message, Does.Contain(parametroFaltante));
         }
 
