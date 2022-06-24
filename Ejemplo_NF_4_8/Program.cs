@@ -16,7 +16,6 @@ namespace Ejemplo_NF_4_8
                 Console.WriteLine(parametros?.ToString());
                 Console.WriteLine("Fin OK!!");
             }
-
             catch (RequiredParameterNotFoundException ex)
             {
                 Console.WriteLine($"ERROR: {ex.Message}");

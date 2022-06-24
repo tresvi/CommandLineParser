@@ -8,7 +8,7 @@ namespace CommandParser.Attributtes.Keywords
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class FlagAttribute : BaseArgumentAttribute
     {
-        public FlagAttribute(string keyword, string shortKeyword, string helpText = "")
+        public FlagAttribute(string keyword, char shortKeyword, string helpText = "")
             : base(keyword, shortKeyword, helpText)
         {
         }

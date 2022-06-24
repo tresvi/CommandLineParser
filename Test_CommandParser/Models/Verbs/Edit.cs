@@ -7,11 +7,11 @@ namespace Test_CommandParser.Models.Verbs
     [Verb("edit", "Comando para editar")]
     internal class Edit
     {
-        [Option("file", "f", true, "", "Ruta del archivo a editar")]
+        [Option("file", 'f', true, "", "Ruta del archivo a editar")]
         public string? File { get; set; }
 
         [DateTimeFormatter("yyyyMMdd")]
-        [Option("fecha", "fe", true, "", "Ruta del archivo a editar")]
+        [Option("fecha", 'F', true, "", "Ruta del archivo a editar")]
         public DateTime FechaEdicion { get; set; }
     }
 }

@@ -12,10 +12,10 @@ namespace CommandParser.Attributtes.Keywords
         public string HelpText { get; set; }
 
 
-        public BaseArgumentAttribute(string keyword, string shortKeyword, string helpText = "")
+        public BaseArgumentAttribute(string keyword, char shortKeyword, string helpText = "")
         {
             Keyword = "--" + keyword;
-            ShortKeyword = "-" + shortKeyword;
+            ShortKeyword = "-" + shortKeyword.ToString();
             HelpText = helpText;
         }
 

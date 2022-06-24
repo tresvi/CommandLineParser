@@ -1,5 +1,4 @@
-﻿using CommandParser.Attributtes;
-using CommandParser.Attributtes.Keywords;
+﻿using CommandParser.Attributtes.Keywords;
 using CommandParser.Exceptions;
 using CommandParser.Helpers;
 using System;
@@ -10,13 +9,20 @@ using System.Text;
 
 namespace CommandParser
 {
-    //TODO: Arreglar metodo Help para que soporte multiclase.
+    //TODO: Ver de parametros repetidos en el CLI, no solo en la definicion de las clases. Hacer metodos de prueba para ambos
+    //TODO: Arreglar metodo Help para que incluya informacion de Verbos.
     //TODO: Agregar un metodo de validacion de estrucura de las clases. Que no haya nombres ni nombres cortos repetidos dentro de una misma clase.
     //TODO: Agregar un metodo de validacion de clases verbo. que ambas no repitan el mismo verbo.
     //TODO: Analizar la posibilidad de definir un verbo por default (que se tome en caso de que no se escriba nada) para futuras versiones.
     public static class CommandLine
     {
 
+        /// <summary>
+        /// Analiza los argumentos para completar la clase requerida
+        /// </summary>
+        /// <typeparam name="T">Tipo de Clase a rellenar en base a los argumentos recibidos como parametros</typeparam>
+        /// <param name="args">Argumentos obtenidos de la linea de comando</param>
+        /// <returns></returns>
         public static T Parse<T>(string[] args) where T : new()
         {
             T targetObject = new T();
@@ -27,25 +33,36 @@ namespace CommandParser
                 PrintHelp(targetObject);
                 return default(T);
             }
-           
-            List<string> keywordsFound = new List<string>();
+
+            InitializeFlagsInFalse(targetObject);
+
+            List<string> keywordsAlreadyFound = new List<string>();
             BaseArgumentAttribute attribute;
             PropertyInfo property;
 
             while (CLI_Arguments.Count != 0)
             {
                 string searchedKeyword = CLI_Arguments[0];
+                if (keywordsAlreadyFound.Contains(searchedKeyword)) 
+                    throw new MultiInvocationParameterException($"El parametro {searchedKeyword} ya fue especificado en la linea de comando");
                 attribute = FindMatchKeywordVsAttribute(searchedKeyword, targetObject, out property);
                 attribute.ParseAndAssign(property, targetObject, ref CLI_Arguments);
-                keywordsFound.Add(searchedKeyword);
+                keywordsAlreadyFound.Add(searchedKeyword);
             }
 
-            CheckRequiredOptions(keywordsFound, targetObject);
-            InitializeFlagsInFalse(targetObject);
+            CheckRequiredOptions(keywordsAlreadyFound, targetObject);
             return targetObject;
         }
 
-
+        /// <summary>
+        /// Busca el attributo correspondiente a la palabra clave correspondiente. Valida que haya 1 y solo 1 definicion en la Clase de destino
+        /// </summary>
+        /// <param name="searchedKeyword"></param>
+        /// <param name="targetObject"></param>
+        /// <param name="propertyOut"></param>
+        /// <returns></returns>
+        /// <exception cref="UnknownParameterException"></exception>
+        /// <exception cref="MultiDefinitionParameterException"></exception>
         private static BaseArgumentAttribute FindMatchKeywordVsAttribute(string searchedKeyword, object targetObject, out PropertyInfo propertyOut)
         {
             BaseArgumentAttribute foundAttribute = null;
@@ -69,12 +86,18 @@ namespace CommandParser
                 throw new UnknownParameterException($"Parámetro desconocido: \"{searchedKeyword}\"");
 
             if (matchCounter > 1)
-                 throw new RepeatedParameterDefinitionException($"El parámetro \"{searchedKeyword}\" fue definido en mas de una Option en la clase \"{targetObject.GetType().Name}\"");
+                 throw new MultiDefinitionParameterException($"El parámetro \"{searchedKeyword}\" fue definido en mas de una Option en la clase \"{targetObject.GetType().Name}\"");
 
             return foundAttribute;
         }
 
 
+        /// <summary>
+        /// Revisa que todas las Option marcadas como requeridas en la clase de destino, haya sido completadas
+        /// </summary>
+        /// <param name="keywordsFound"></param>
+        /// <param name="targetObject"></param>
+        /// <exception cref="RequiredParameterNotFoundException"></exception>
         private static void CheckRequiredOptions(List<string> keywordsFound, object targetObject)
         {
             List<BaseArgumentAttribute> requiredAttributes = new List<BaseArgumentAttribute>();
@@ -94,6 +117,7 @@ namespace CommandParser
             }
         }
 
+
         private static void InitializeFlagsInFalse(object targetObject)
         {
             foreach (PropertyInfo property in targetObject.GetType().GetProperties())
@@ -105,6 +129,15 @@ namespace CommandParser
             }
         }
 
+
+        /// <summary>
+        /// Analiza los argumentos para completar la clase que corresponda segun el Verbo solicitado
+        /// </summary>
+        /// <typeparam name="T1">Clase que representa al Verbo 1 a rellenar con los parametros si su verbo es el solicitado</typeparam>
+        /// <typeparam name="T2">Clase Verbo 2</typeparam>
+        /// <param name="args">Argumentos obtenidos de la linea de comando</param>
+        /// <returns></returns>
+        /// <exception cref="UnknownVerbException"></exception>
         public static object Parse<T1, T2>(string[] args)
             where T1 : new()
             where T2 : new()

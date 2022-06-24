@@ -13,7 +13,7 @@ namespace CommandParser.Attributtes.Keywords
         public string DefaultValue { get; set; }
         public bool IsRequired { get; set; }
 
-        public OptionAttribute(string keyword, string shortKeyword, bool isRequired, string defaultValue = "", string helpText = "")
+        public OptionAttribute(string keyword, char shortKeyword, bool isRequired, string defaultValue = "", string helpText = "")
             : base(keyword, shortKeyword, helpText)
         {
             DefaultValue = defaultValue;

@@ -6,47 +6,47 @@ namespace Test_CommandParser.Models
 {
     internal class Param_Multi_Type
     {
-        [Option("string", "s", true)]
+        [Option("string", 's', true)]
         public string? PropString { get; set; }
 
         [DateTimeFormatter("yyyyMMdd")]
-        [Option("datetime", "d", true)]
+        [Option("datetime", 'd', true)]
         public DateTime PropDateTime { get; set; }
 
-        [Option("byte", "b", true)]
+        [Option("byte", 'b', true)]
         public byte PropByte { get; set; }
 
-        [Option("sbyte", "sb", true)]
+        [Option("sbyte", 'B', true)]
         public sbyte PropSByte { get; set; }
 
-        [Option("short", "sh", true)]
+        [Option("short", 's', true)]
         public short PropShort { get; set; }
 
-        [Option("ushort", "us", true)]
+        [Option("ushort", 'S', true)]
         public ushort PropUShort { get; set; }
 
-        [Option("int", "i", true)]
+        [Option("int", 'i', true)]
         public int PropInt { get; set; }
 
-        [Option("uint", "ui", true)]
+        [Option("uint", 'I', true)]
         public uint PropUInt { get; set; }
 
-        [Option("long", "l", true)]
+        [Option("long", 'l', true)]
         public long PropLong { get; set; }
 
-        [Option("ulong", "ul", true)]
+        [Option("ulong", 'L', true)]
         public ulong PropULong { get; set; }
 
-        [Option("float", "f", true)]
+        [Option("float", 'f', true)]
         public float PropFloat { get; set; }
 
-        [Option("double", "do", true)]
+        [Option("double", 'D', true)]
         public double PropDouble { get; set; }
 
-        [Option("decimal", "de", true)]
+        [Option("decimal", 'e', true)]
         public decimal PropDecimal { get; set; }
 
-        [Option("bool", "bo", true)]
+        [Option("bool", 'c', true)]
         public bool PropBool { get; set; }
 
     }
