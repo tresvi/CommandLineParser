@@ -3,15 +3,12 @@ using CommandParser.Exceptions;
 using CommandParser.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
 namespace CommandParser
 {
-    //TODO: Ver de parametros repetidos en el CLI, no solo en la definicion de las clases. Hacer metodos de prueba para ambos
     //TODO: Arreglar metodo Help para que incluya informacion de Verbos.
-    //TODO: Agregar un metodo de validacion de estrucura de las clases. Que no haya nombres ni nombres cortos repetidos dentro de una misma clase.
     //TODO: Agregar un metodo de validacion de clases verbo. que ambas no repitan el mismo verbo.
     //TODO: Analizar la posibilidad de definir un verbo por default (que se tome en caso de que no se escriba nada) para futuras versiones.
     public static class CommandLine
@@ -34,6 +31,7 @@ namespace CommandParser
                 return default(T);
             }
 
+            CheckForDuplicatedKeywordInClass<T>();
             InitializeFlagsInFalse(targetObject);
 
             List<string> keywordsAlreadyFound = new List<string>();
@@ -75,9 +73,10 @@ namespace CommandParser
                 {
                     if (attribute.Keyword == searchedKeyword || attribute.ShortKeyword == searchedKeyword)
                     {
+                        matchCounter++;
                         foundAttribute = attribute;
                         propertyOut = property;
-                        matchCounter++;
+
                     }
                 }
             }
@@ -86,9 +85,10 @@ namespace CommandParser
                 throw new UnknownParameterException($"Parámetro desconocido: \"{searchedKeyword}\"");
 
             if (matchCounter > 1)
-                 throw new MultiDefinitionParameterException($"El parámetro \"{searchedKeyword}\" fue definido en mas de una Option en la clase \"{targetObject.GetType().Name}\"");
+                throw new MultiDefinitionParameterException($"La Keyword \"{searchedKeyword}\" ya se mapeó con la property \"{propertyOut.Name}\" " +
+                    $"de la clase \"{targetObject.GetType().Name}\". No se puede mapear la misma palabra en mas de una property de la misma clase.");
 
-            return foundAttribute;
+                return foundAttribute;
         }
 
 
@@ -118,6 +118,38 @@ namespace CommandParser
         }
 
 
+        /// <summary>
+        /// Revisa que no haya definiciones duplicadas de keywords y shortkeywords dentro de la clase de destino
+        /// </summary>
+        /// <param name="keywordsFound"></param>
+        /// <param name="targetObject"></param>
+        /// <exception cref="RequiredParameterNotFoundException"></exception>
+        private static void CheckForDuplicatedKeywordInClass<T>() where T : new()
+        {
+            T targetObject = new T();
+            Dictionary<string, string> shortKeywordsProperties = new Dictionary<string, string>();
+            Dictionary<string, string> keywordsProperties = new Dictionary<string, string>();
+
+            foreach (PropertyInfo property in targetObject.GetType().GetProperties())
+            {
+                foreach (OptionAttribute attribute in property.GetCustomAttributes(typeof(OptionAttribute), true))
+                {
+                    if (shortKeywordsProperties.ContainsKey(attribute.ShortKeyword))
+                        throw new MultiDefinitionParameterException($"La ShortKeyword \"{attribute.ShortKeyword}\" se mapeó con la property \"{property.Name}\" y también con la property \"{shortKeywordsProperties[attribute.ShortKeyword]}\" " +
+                            $"de la clase \"{targetObject.GetType().Name}\". No se puede mapear la misma palabra en mas de una property de la misma clase.");
+
+                    shortKeywordsProperties.Add(attribute.ShortKeyword, property.Name);
+
+                    if (keywordsProperties.ContainsKey(attribute.Keyword))
+                        throw new MultiDefinitionParameterException($"La Keyword \"{attribute.Keyword}\" se mapeó con la property \"{property.Name}\" y también con la property \"{keywordsProperties[attribute.Keyword]}\" " +
+                            $"de la clase \"{targetObject.GetType().Name}\". No se puede mapear la misma palabra en mas de una property de la misma clase.");
+
+                    keywordsProperties.Add(attribute.Keyword, property.Name);
+                }
+            }
+        }
+
+
         private static void InitializeFlagsInFalse(object targetObject)
         {
             foreach (PropertyInfo property in targetObject.GetType().GetProperties())
@@ -142,6 +174,8 @@ namespace CommandParser
             where T1 : new()
             where T2 : new()
         {
+            throw new NotImplementedException();
+            /*
             List<string> verbsAvailable = VerbHelper.ValidateVerbDecoration<T1, T2>();
             //List<string> defaultVerbs = VerbHelper.DetectDefaultVerbs<T1, T2>();
 
@@ -169,7 +203,7 @@ namespace CommandParser
             if (searchedVerb.Trim().StartsWith("--") || searchedVerb.Trim().StartsWith("-"))
                 throw new UnknownVerbException($"{searchedVerb} no es un nombre de verbo valido. Debe especificar alguno de los siguientes: {string.Join(" | ", verbsAvailable)}");
 
-            List<string> argsList = args.ToList();
+            List<string> argsList = new List<string>(args);
             argsList.RemoveAt(0);
             args = argsList.ToArray();
 
@@ -179,6 +213,7 @@ namespace CommandParser
                 return Parse<T2>(args);
             else
                 throw new UnknownVerbException($"{searchedVerb} no es un nombre de verbo valido. Debe especificar alguno de los siguientes: {string.Join(" | ", verbsAvailable)}");
+            */
         }
 
 

@@ -300,5 +300,22 @@ namespace Test_CommandParser
             Assert.That(exceptionDetalle?.Message, Does.Contain(failedParameter));
             Assert.That(exceptionDetalle?.Message, Does.Contain("fecha"));
         }
+
+
+        [Test]
+        public void Parse_Input_2_Dates_Throws_MultiDefinitionParameter()
+        {
+            string inputLine = $"--string EstoEsunString --datetime 20191229 --byte 250 --sbyte 120";
+            string[] args = inputLine.Split(' ');
+            MultiDefinitionParameterException? exceptionDetalle = Assert.Throws<MultiDefinitionParameterException>(() => CommandLine.Parse<Param_Repited_ShortKeyword>(args));
+            Assert.That(exceptionDetalle?.Message, Does.Contain("-s"));
+
+            inputLine = $"--string EstoEsunString --datetime 20191229 --byte 250 --sbyte 120";
+            args = inputLine.Split(' ');
+            MultiDefinitionParameterException? exceptionDetalle2 = Assert.Throws<MultiDefinitionParameterException>(() => CommandLine.Parse<Param_Repited_Keyword>(args));
+            Assert.That(exceptionDetalle2?.Message, Does.Contain("byte"));
+        }
+
+        
     }
 }

@@ -6,7 +6,7 @@ namespace Test_CommandParser.Models
 {
     internal class Param_Multi_Type
     {
-        [Option("string", 's', true)]
+        [Option("string", 'x', true)]
         public string? PropString { get; set; }
 
         [DateTimeFormatter("yyyyMMdd")]

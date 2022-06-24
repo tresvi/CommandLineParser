@@ -19,6 +19,8 @@ namespace Test_CommandParser
             _editTest = new Edit() { File = @"C:\Temp\Salida.txt", FechaEdicion = new DateTime(2021, 12, 29) };
         }
 
+
+        [Ignore("Ignore a fixture")]
         [TestCase(@"add --directory C:\Temp\ -n Salida.txt", "add")]
         [TestCase(@"edit --file C:\Temp\Salida.txt --fecha 20211229", "edit")]
         public void Parse_InputDeclaratedVerbs(string inputLine, string expectedVerb)
@@ -41,6 +43,7 @@ namespace Test_CommandParser
         }
 
 
+        [Ignore("Ignore a fixture")]
         [TestCase(@"commit --directory C:\Temp\ -n Salida.txt", "commit")]
         [TestCase(@"delete --file C:\Temp\Salida.txt --fecha 20211229", "delete")]
         public void Parse_Throw_NotDeclaratedVerbs(string inputLine, string expectedVerb)
@@ -52,6 +55,8 @@ namespace Test_CommandParser
             Assert.That(exception?.Message, Does.Contain(expectedVerb));
         }
 
+
+        [Ignore("Ignore a fixture")]
         [TestCase(@"add --directory C:\Temp\ -n Salida.txt")]
         public void Parse_Throw_NotVerbClass(string inputLine)
         {
