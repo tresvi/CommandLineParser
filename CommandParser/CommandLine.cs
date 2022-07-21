@@ -28,7 +28,7 @@ namespace CommandParser
             if (IsHelpRequested(CLI_Arguments))
             {
                 PrintHelp(targetObject);
-                return default(T);
+                Environment.Exit(0);
             }
 
             CheckForDuplicatedKeywordInClass<T>();
