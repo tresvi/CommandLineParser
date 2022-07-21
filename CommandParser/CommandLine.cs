@@ -13,6 +13,7 @@ namespace CommandParser
     //TODO: Analizar la posibilidad de definir un verbo por default (que se tome en caso de que no se escriba nada) para futuras versiones.
     public static class CommandLine
     {
+        private const string HELP_TEXT = "--help | -h | /?\t\tDespliega la ayuda detallando las funciones de los parametros.";
 
         /// <summary>
         /// Analiza los argumentos para completar la clase requerida
@@ -251,6 +252,7 @@ namespace CommandParser
                     }
                 }
             }
+            sb.AppendLine(HELP_TEXT);
             Console.WriteLine(sb.ToString());
         }
 
