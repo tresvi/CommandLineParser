@@ -39,8 +39,7 @@ jobs:
       run: dotnet build ${{ env.PROJECT_PATH }} /p:Version=${{ steps.gitversion.outputs.AssemblySemVer }} /p:AssemblyVersion=${{ steps.gitversion.outputs.AssemblySemVer }} /p:InformationalVersion=${{ steps.gitversion.outputs.InformationalVersion }} --no-restore --configuration Release
 
     - name: 'Run Tests'
-      uses: actions/checkout@v2
-      run: dotnet test
+      run: dotnet test --no-restore --verbosity normal
 
     - name: 'Pack project'
       run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release /p:PackageVersion=${{ steps.gitversion.outputs.AssemblySemVer }} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
