@@ -1,0 +1,7 @@
+mode: Mainline
+branches:
+  main:
+    tag: ''
+    increment: Major
+ignore:
+  sha: []

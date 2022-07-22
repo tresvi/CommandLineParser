@@ -1,0 +1,49 @@
+name: "Build and Deploy NuGet"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  PROJECT_PATH: 'POCNuget/POCNuget.csproj'
+  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}\output
+  NUGET_SOURCE_DIRECTORY: https://nuget.pkg.github.com/Banco-Nacion/index.json
+
+jobs:
+  build:
+    runs-on: 'ubuntu-latest'
+    steps:
+    - name: 'Install GitVersion'
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: '5.x'
+
+    - name: 'Checkout'
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+      
+    - name: 'Determine Version'
+      id: gitversion
+      uses: gittools/actions/gitversion/execute@v0.9.7
+      with:
+        useConfigFile: true
+        configFilePath: ./.github/gitversion.yml
+
+    - name: 'Restore packages'
+      run: dotnet restore ${{ env.PROJECT_PATH }}
+
+    - name: 'Build project'
+      run: dotnet build ${{ env.PROJECT_PATH }} /p:Version=${{ steps.gitversion.outputs.AssemblySemVer }} /p:AssemblyVersion=${{ steps.gitversion.outputs.AssemblySemVer }} /p:InformationalVersion=${{ steps.gitversion.outputs.InformationalVersion }} --no-restore --configuration Release
+
+    - name: 'Run Tests'
+      uses: actions/checkout@v2
+      run: dotnet test
+
+    - name: 'Pack project'
+      run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release /p:PackageVersion=${{ steps.gitversion.outputs.AssemblySemVer }} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+
+    - name: 'Push package'
+      run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\*.nupkg --source ${{ env.NUGET_SOURCE_DIRECTORY }} --api-key ${{ github.token }} --skip-duplicate
