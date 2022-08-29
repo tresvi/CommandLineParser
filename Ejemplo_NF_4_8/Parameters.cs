@@ -30,7 +30,6 @@ namespace Ejemplo_NF_4_8
         [Option("fechaproceso", 'f', true, HelpText = "Fecha en la cual se realiza el procesamiento.")]
         public DateTime FechaProceso { get; set; }
 
-        [Obsolete]
         [Flag("notificarpormail", 'n', HelpText = "Indica si se debe notificar por mail el resultado del proceso.")]
         public bool NotificarPorMail { get; set; }
 
