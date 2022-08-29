@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    public class MultiInvocationParameterException: CommandParserException
+    public class MultiInvocationParameterException: CommandParserBaseException
     {
         public MultiInvocationParameterException() { }
         public MultiInvocationParameterException(string message) : base(message) { }

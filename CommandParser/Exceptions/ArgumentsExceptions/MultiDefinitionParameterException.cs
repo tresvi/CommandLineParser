@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    public class MultiDefinitionParameterException : CommandParserException
+    public class MultiDefinitionParameterException : CommandParserBaseException
     {
         public MultiDefinitionParameterException() { }
         public MultiDefinitionParameterException(string message) : base(message) { }

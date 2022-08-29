@@ -1,6 +1,8 @@
 ﻿using CommandParser;
 using CommandParser.Exceptions;
 using System;
+using System.Reflection;
+using System.Text;
 
 namespace Ejemplo_NF_4_8
 {
@@ -10,28 +12,32 @@ namespace Ejemplo_NF_4_8
         {
             try
             {
-                //object parametro = CommandLine.Parse<Parameters, int>(args);
-
-                Parameters parametros = CommandLine.Parse<Parameters>(args);
-                Console.WriteLine(parametros?.ToString());
+                Parameters parameters = CommandLine.Parse<Parameters>(args);
+                Console.WriteLine(ListProperties(parameters));
                 Console.WriteLine("Fin OK!!");
             }
-            catch (RequiredParameterNotFoundException ex)
+            catch (CommandParserBaseException ex)
             {
-                Console.WriteLine($"ERROR: {ex.Message}");
-                Console.WriteLine("Fin Todo Mal!!");
-            }
-            catch (CommandParserException ex)
-            {
-                //TODO
+                Console.WriteLine($"ERROR al interpretar la linea de comando: {ex.Message}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"ERROR: {ex.Message}");
-                Console.WriteLine("Fin Todo Mal!!");
             }
 
             Console.ReadKey();
+        }
+
+
+        public static string ListProperties(object instancia)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (PropertyInfo property in instancia.GetType().GetProperties())
+            {
+                sb.AppendLine($"{property.Name} : {property.GetValue(instancia)}");
+            }
+            return sb.ToString();
         }
     }
 }

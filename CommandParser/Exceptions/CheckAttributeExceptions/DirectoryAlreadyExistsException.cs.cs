@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    public class DirectoryAlreadyExistsException : CommandParserException
+    public class DirectoryAlreadyExistsException : CommandParserBaseException
     {
         public DirectoryAlreadyExistsException() { }
         public DirectoryAlreadyExistsException(string message) : base(message) { }

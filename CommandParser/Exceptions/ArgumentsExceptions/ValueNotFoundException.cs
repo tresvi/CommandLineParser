@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    public class ValueNotFoundException : CommandParserException
+    public class ValueNotFoundException : CommandParserBaseException
     {
         public ValueNotFoundException() { }
         public ValueNotFoundException(string message) : base(message) { }

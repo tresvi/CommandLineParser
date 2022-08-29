@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    public class NotVerbClassException : CommandParserException
+    public class NotVerbClassException : CommandParserBaseException
     {
         public NotVerbClassException() { }
         public NotVerbClassException(string message) : base(message) { }

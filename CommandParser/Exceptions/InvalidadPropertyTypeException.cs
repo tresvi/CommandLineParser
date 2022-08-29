@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    internal class InvalidadPropertyTypeException : CommandParserException
+    internal class InvalidadPropertyTypeException : CommandParserBaseException
     {
         public InvalidadPropertyTypeException() { }
         public InvalidadPropertyTypeException(string message) : base(message) { }

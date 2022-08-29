@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    internal class TooManyDefaultVerbsException : CommandParserException
+    internal class TooManyDefaultVerbsException : CommandParserBaseException
     {
         public TooManyDefaultVerbsException() { }
         public TooManyDefaultVerbsException(string message) : base(message) { }

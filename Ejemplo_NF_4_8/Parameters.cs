@@ -2,12 +2,10 @@
 using CommandParser.Attributes.Validation;
 using CommandParser.Attributtes.Keywords;
 using System;
-using System.Reflection;
-using System.Text;
 
 namespace Ejemplo_NF_4_8
 {
-    [Verb("Commit", "Es un commit")]
+    // [Verb("Commit", "Es un commit")]
     public class Parameters
     {
         //The Art of UNIX Programming
@@ -20,11 +18,9 @@ namespace Ejemplo_NF_4_8
         [Option("inputfile", 'i', true, HelpText = "Archivo de entrada a ser procesado.")]
         public string InputFile { get; set; }
 
-
-        [DirectoryExists]
+        [DirectoryExists]  
         [Option("outputfile", 'o', true, HelpText = "Archivo de salida resultante del procesamiento.")]
         public string OutputFile { get; set; }
-
 
         [DateTimeFormatter("yyyyMMdd")]
         [Option("fechaproceso", 'f', true, HelpText = "Fecha en la cual se realiza el procesamiento.")]
@@ -36,16 +32,7 @@ namespace Ejemplo_NF_4_8
         [Option("reintentos", 'r', true, HelpText = "Fecha en la cual se realiza el procesamiento.")]
         public int Reintentos { get; set; }
 
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
 
-            foreach (PropertyInfo property in this.GetType().GetProperties())
-            {
-                sb.AppendLine($"{property.Name} : {property.GetValue(this)}");
-            }
-            return sb.ToString();
-        }
     }
 
 }

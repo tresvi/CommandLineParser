@@ -21,7 +21,7 @@ namespace Ejemplo_1
                 Console.WriteLine($"Notificar: {parametros.NotificarPorMail}");
                 Console.WriteLine("Fin OK!!");
             }
-            catch (CommandParserException ex)
+            catch (CommandParserBaseException ex)
             {
                 Console.WriteLine($"ERROR: {ex.Message}");
             }

@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    public class FileNotExistsException : CommandParserException
+    public class FileNotExistsException : CommandParserBaseException
     {
         public FileNotExistsException() { }
         public FileNotExistsException(string message) : base(message) { }

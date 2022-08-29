@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    public class UnknownVerbException : CommandParserException
+    public class UnknownVerbException : CommandParserBaseException
     {
         public UnknownVerbException() { }
         public UnknownVerbException(string message) : base(message) { }

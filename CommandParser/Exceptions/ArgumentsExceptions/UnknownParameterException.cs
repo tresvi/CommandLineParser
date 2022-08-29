@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    public class UnknownParameterException : CommandParserException
+    public class UnknownParameterException : CommandParserBaseException
     {
         public UnknownParameterException() { }
         public UnknownParameterException(string message) : base(message) { }

@@ -2,7 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
-    internal class NotDefaultVerbException : CommandParserException
+    internal class NotDefaultVerbException : CommandParserBaseException
     {
         public NotDefaultVerbException() { }
         public NotDefaultVerbException(string message) : base(message) { }
