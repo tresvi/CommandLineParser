@@ -10,7 +10,7 @@ namespace CommandParser.Attributes.Formatter
 {
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    public class DateTimeFormatterAttribute : FormatterAttributeBase
+    public class DateTimeFormatterAttribute : FormatterBaseAttribute
     {
         public DateTimeFormatterAttribute(string format) : base(format) { }
 

@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace CommandParser.Helpers
 {
-    internal class VerbHelper
+    internal static class VerbHelper
     {
         internal static bool CheckIfVerbIsInClass<T>(string searchedVerb) where T : new()
         {

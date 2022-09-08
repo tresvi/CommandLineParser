@@ -6,11 +6,11 @@ namespace CommandParser.Attributes.Formatter
 {
     //No se podra definir mas de un atributo de formato por property.
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public abstract class FormatterAttributeBase : Attribute
+    public abstract class FormatterBaseAttribute : Attribute
     {
         public string Format { get; set; }
 
-        public FormatterAttributeBase(string format)
+        protected FormatterBaseAttribute(string format)
         {
             this.Format = format;
         }

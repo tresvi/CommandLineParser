@@ -2,10 +2,11 @@
 
 namespace CommandParser.Exceptions
 {
+    [Serializable]
     public abstract class CommandParserBaseException : SystemException
     {
-        public CommandParserBaseException() { }
-        public CommandParserBaseException(string message) : base(message) { }
-        public CommandParserBaseException(string message, Exception inner) : base(message, inner) { }
+        protected CommandParserBaseException() { }
+        protected CommandParserBaseException(string message) : base(message) { }
+        protected CommandParserBaseException(string message, Exception inner) : base(message, inner) { }
     }
 }

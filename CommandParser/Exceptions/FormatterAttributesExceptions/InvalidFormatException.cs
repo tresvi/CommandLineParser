@@ -2,6 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
+    [Serializable]
     public class InvalidFormatException : CommandParserBaseException
     {
         public InvalidFormatException() { }

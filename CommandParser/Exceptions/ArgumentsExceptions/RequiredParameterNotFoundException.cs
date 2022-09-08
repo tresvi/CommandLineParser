@@ -2,6 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
+    [Serializable]
     public class RequiredParameterNotFoundException : CommandParserBaseException
     {
         public RequiredParameterNotFoundException() { }

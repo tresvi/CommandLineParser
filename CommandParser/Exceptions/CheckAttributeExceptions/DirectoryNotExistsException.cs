@@ -2,6 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
+    [Serializable]
     public class DirectoryNotExistsException : CommandParserBaseException
     {
         public DirectoryNotExistsException() { }

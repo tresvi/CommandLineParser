@@ -37,7 +37,7 @@ namespace CommandParser.Attributtes.Keywords
             {
                 if (attrib is ValidationAttributeBase checkAttrib)              //Aplica atributos que solo chequean el dato
                     checkAttrib.Check(parameter, property);
-                else if (attrib is FormatterAttributeBase formatterAttrib) //Aplica atributos que modifican el modifican (lo formatean)
+                else if (attrib is FormatterBaseAttribute formatterAttrib) //Aplica atributos que modifican el modifican (lo formatean)
                     formattedValue = formatterAttrib.ApplyFormat(parameter, property);
             }
 

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Ejemplo_NF_4_8
 {
-    internal class Program
+    internal static class Program
     {
         static void Main(string[] args)
         {

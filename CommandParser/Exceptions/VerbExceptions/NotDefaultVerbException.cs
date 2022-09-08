@@ -2,6 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
+    [Serializable]
     internal class NotDefaultVerbException : CommandParserBaseException
     {
         public NotDefaultVerbException() { }

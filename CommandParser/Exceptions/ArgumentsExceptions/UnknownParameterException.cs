@@ -2,6 +2,7 @@
 
 namespace CommandParser.Exceptions
 {
+    [Serializable]
     public class UnknownParameterException : CommandParserBaseException
     {
         public UnknownParameterException() { }
