@@ -45,7 +45,7 @@ namespace CommandParser
             while (CLI_Arguments.Count != 0)
             {
                 string searchedKeyword = CLI_Arguments[0];
-                if (keywordsAlreadyFound.Contains(searchedKeyword)) 
+                if (keywordsAlreadyFound.Contains(searchedKeyword))
                     throw new MultiInvocationParameterException($"El parametro {searchedKeyword} ya fue especificado en la linea de comando");
                 attribute = FindMatchKeywordVsAttribute(searchedKeyword, targetObject, out property);
                 attribute.ParseAndAssign(property, targetObject, ref CLI_Arguments);
@@ -87,12 +87,11 @@ namespace CommandParser
 
             if (matchCounter == 0)
                 throw new UnknownParameterException($"Parámetro desconocido: \"{searchedKeyword}\"");
-
-            if (matchCounter > 1)
+            else if (matchCounter > 1)
                 throw new MultiDefinitionParameterException($"La Keyword \"{searchedKeyword}\" ya se mapeó con la property \"{propertyOut.Name}\" " +
                     $"de la clase \"{targetObject.GetType().Name}\". No se puede mapear la misma palabra en mas de una property de la misma clase.");
 
-                return foundAttribute;
+            return foundAttribute;
         }
 
 
