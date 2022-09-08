@@ -1,4 +1,4 @@
-name: Chequeo seguridad con Sonar
+name: Build
 on:
   push:
     branches:
