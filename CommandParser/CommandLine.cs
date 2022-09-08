@@ -88,7 +88,7 @@ namespace CommandParser
             if (matchCounter == 0)
                 throw new UnknownParameterException($"Parámetro desconocido: \"{searchedKeyword}\"");
             else if (matchCounter > 1)
-                throw new MultiDefinitionParameterException($"La Keyword \"{searchedKeyword}\" ya se mapeó con la property \"{propertyOut.Name}\" " +
+                throw new MultiDefinitionParameterException($"La Keyword \"{searchedKeyword}\" ya se mapeó con la property \"{propertyOut?.Name}\" " +
                     $"de la clase \"{targetObject.GetType().Name}\". No se puede mapear la misma palabra en mas de una property de la misma clase.");
 
             return foundAttribute;
