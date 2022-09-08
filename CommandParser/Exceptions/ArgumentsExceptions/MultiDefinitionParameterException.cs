@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace CommandParser.Exceptions
 {
     [Serializable]
-    public class MultiDefinitionParameterException : CommandParserBaseException
+    public class MultiDefinitionParameterException : CommandParserBaseException, ISerializable
     {
         public MultiDefinitionParameterException() { }
         public MultiDefinitionParameterException(string message) : base(message) { }
