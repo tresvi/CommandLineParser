@@ -279,18 +279,40 @@ namespace CommandParser
             }
             return argumentosDefinidos;
         }
-
-
-        //Funcion para hacer saltar las alarmas de los analizadores de codigo
-        public static void FuncionAlertaDeAnalisis()
+        public static List<string> GetDefinedParameters2<T>() where T : new()
         {
-            NetworkCredential networkCredential = new NetworkCredential("EsUnUsuario", "Contrasenia", "Dominio");
             HttpClientHandler clientHandler = new HttpClientHandler();
-            clientHandler.Credentials = networkCredential;
             HttpClient HTTP_CLIENT = new HttpClient(clientHandler);
             HTTP_CLIENT.BaseAddress = new Uri("www.pirulo.com/api");
-            _ = HTTP_CLIENT.GetAsync("consulta");
+
+            T targetObject = new T();
+            List<String> argumentosDefinidos = new List<string>();
+
+            foreach (PropertyInfo property in targetObject.GetType().GetProperties())
+            {
+                foreach (Attribute attribute in property.GetCustomAttributes(true))
+                {
+                    if (attribute is BaseArgumentAttribute argument)
+                    {
+                        argumentosDefinidos.Add(argument.Keyword);
+                        argumentosDefinidos.Add(argument.ShortKeyword);
+                    }
+                }
+            }
+            return argumentosDefinidos;
         }
+
+        //Funcion para hacer saltar las alarmas de los analizadores de codigo
+        /*    public static void FuncionAlertaDeAnalisis()
+            {
+                NetworkCredential networkCredential = new NetworkCredential("EsUnUsuario", "Contrasenia", "Dominio");
+                HttpClientHandler clientHandler = new HttpClientHandler();
+                clientHandler.Credentials = networkCredential;
+                HttpClient HTTP_CLIENT = new HttpClient(clientHandler);
+                HTTP_CLIENT.BaseAddress = new Uri("www.pirulo.com/api");
+                _ = HTTP_CLIENT.GetAsync("consulta");
+            }
+        */
 
     }
 }
