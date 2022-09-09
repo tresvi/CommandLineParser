@@ -2,7 +2,6 @@
 
 namespace CommandParser.Exceptions
 {
-    [Serializable]
     public class NotVerbClassException : CommandParserBaseException
     {
         public NotVerbClassException() { }
