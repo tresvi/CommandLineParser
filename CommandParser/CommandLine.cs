@@ -3,6 +3,8 @@ using CommandParser.Exceptions;
 using CommandParser.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 
@@ -276,6 +278,18 @@ namespace CommandParser
                 }
             }
             return argumentosDefinidos;
+        }
+
+
+        //Funcion para hacer saltar las alarmas de los analizadores de codigo
+        public static void FuncionAlertaDeAnalisis()
+        {
+            NetworkCredential networkCredential = new NetworkCredential("EsUnUsuario", "Contrasenia", "Dominio");
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.Credentials = networkCredential;
+            HttpClient HTTP_CLIENT = new HttpClient(clientHandler);
+            HTTP_CLIENT.BaseAddress = new Uri("www.pirulo.com/api");
+            _ = HTTP_CLIENT.GetAsync("consulta");
         }
 
     }
