@@ -10,6 +10,7 @@ using System.Text;
 
 namespace CommandParser
 {
+    //TODO: Agregar un attribute nivel clase para documentacion extra en el helptext. Prto ejemplo explicacion que que hace el programa.
     //TODO: Agregar el RangeValidationAttribute.
     //TODO: Agregar el StringListValidationAttribute.
     //TODO: Arreglar metodo Help para que incluya informacion de Verbos.
