@@ -21,25 +21,22 @@ jobs:
         versionSpec: '5.x'
 
     - name: 'Checkout'
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
       
     - name: 'Determine Version'
       id: gitversion
       uses: gittools/actions/gitversion/execute@v0.9.7
-      with:
-        useConfigFile: true
-        configFilePath: ./.github/gitversion.yml
+#      with:
+#        useConfigFile: true
+#        configFilePath: ./.github/gitversion.yml
 
     - name: 'Restore packages'
       run: dotnet restore ${{ env.PROJECT_PATH }}
 
     - name: 'Build project'
       run: dotnet build ${{ env.PROJECT_PATH }} /p:Version=${{ steps.gitversion.outputs.AssemblySemVer }} /p:AssemblyVersion=${{ steps.gitversion.outputs.AssemblySemVer }} /p:InformationalVersion=${{ steps.gitversion.outputs.InformationalVersion }} --no-restore --configuration Release
-
-    - name: 'Run Tests'
-      run: dotnet test --no-restore --verbosity normal
 
     - name: 'Pack project'
       run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release /p:PackageVersion=${{ steps.gitversion.outputs.AssemblySemVer }} --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}

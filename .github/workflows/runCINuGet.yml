@@ -1,0 +1,40 @@
+name: "Build and Test NuGet"
+
+on:
+  pull_request:
+    branches: 
+      - main 
+      - develop
+
+env:
+  PROJECT_PATH: 'CommandParser/CommandParser.csproj'
+  TEST_PROJECT_PATH: 'Test_CommandParser/Test_CommandParser.csproj'
+  PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/output
+  PACKAGE_OUTPUT_DIRECTORY_RESULTS: ${{ github.workspace }}/output/test-results
+
+jobs:
+  build-and-test:
+    runs-on: 'ubuntu-latest'
+    steps:
+
+    - name: 'Checkout'
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: 'Restore packages'
+      run: dotnet restore ${{ env.PROJECT_PATH }}
+
+    - name: 'Build project'
+      run: dotnet build ${{ env.PROJECT_PATH }} /p:Version=0.0.0 /p:AssemblyVersion=0.0.0 /p:InformationalVersion=0.0.0 --no-restore --configuration Release
+
+    - name: 'Run Tests'
+      run: dotnet test ${{ env.TEST_PROJECT_PATH  }} --logger "trx;LogFileName=test-results.trx" --results-directory "${{ env.PACKAGE_OUTPUT_DIRECTORY_RESULTS }}"
+
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    
+      with:
+        name: test-report
+        path: "${{ env.PACKAGE_OUTPUT_DIRECTORY_RESULTS }}/test-results.trx"
+        reporter: dotnet-trx
