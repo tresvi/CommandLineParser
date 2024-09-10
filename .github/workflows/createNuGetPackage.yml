@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  PROJECT_PATH: 'CommandParser/CommandParser.csproj'
+  PROJECT_PATH: 'Tresvi.CommandLineParser/CommandLineParser.csproj'
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/output
   NUGET_SOURCE_DIRECTORY: https://nuget.pkg.github.com/tresvi/index.json
 

@@ -1,6 +1,6 @@
-﻿using CommandParser.Attributes.Formatter;
-using CommandParser.Attributes.Validation;
-using CommandParser.Attributtes.Keywords;
+﻿using Tresvi.CommandParser.Attributes.Formatter;
+using Tresvi.CommandParser.Attributes.Validation;
+using Tresvi.CommandParser.Attributtes.Keywords;
 using System;
 
 namespace Ejemplo_NF_4_8

@@ -7,8 +7,8 @@ on:
       - develop
 
 env:
-  PROJECT_PATH: 'CommandParser/CommandParser.csproj'
-  TEST_PROJECT_PATH: 'Test_CommandParser/Test_CommandParser.csproj'
+  PROJECT_PATH: 'Tresvi.CommandLineParser/TresviCommandLineParser.csproj'
+  TEST_PROJECT_PATH: 'Tresvi.CommandLineParser.Test.Unit/Tresvi.CommandLineParser.Test.Unit.csproj'
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/output
   PACKAGE_OUTPUT_DIRECTORY_RESULTS: ${{ github.workspace }}/output/test-results
 
