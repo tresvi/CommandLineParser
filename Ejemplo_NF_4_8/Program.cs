@@ -1,5 +1,5 @@
-﻿using CommandParser;
-using CommandParser.Exceptions;
+﻿using Tresvi.CommandParser;
+using Tresvi.CommandParser.Exceptions;
 using System;
 using System.Reflection;
 using System.Text;

@@ -1,6 +1,6 @@
-﻿using CommandParser;
-using CommandParser.Attributtes.Keywords;
-using CommandParser.Exceptions;
+﻿using Tresvi.CommandParser;
+using Tresvi.CommandParser.Attributtes.Keywords;
+using Tresvi.CommandParser.Exceptions;
 using System;
 
 namespace Ejemplo_1
