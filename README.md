@@ -14,17 +14,17 @@ Todo esto sin necesidad de escribir código de lógica de negocio ni validación
 
 ***
 
-
 ### Tabla de contenido
-* [¿Por que usar CommandLineParser?](https://github.com/tresvi/CommandLineParser/wiki#por-qu%C3%A9-usar-commandlineparser)
-* [Descripción de uso y funcionamiento](https://github.com/tresvi/CommandLineParser/wiki#descripci%C3%B3n-de-uso-y-funcionamiento)
-* [Compatibilidad](https://github.com/tresvi/CommandLineParser/wiki#compatibilidad)
-* [Terminología](https://github.com/tresvi/CommandLineParser/wiki#terminolog%C3%ADa)
-* [Próximas funcionalidades](https://github.com/tresvi/CommandLineParser/wiki#pr%C3%B3ximas-funcionalidades)
+* [¿Por que usar CommandLineParser?](https://github.com/tresvi/CommandLineParser?tab=readme-ov-file#por-qu%C3%A9-usar-commandlineparser)
+* [Compatibilidad](https://github.com/tresvi/CommandLineParser?tab=readme-ov-file#compatibilidad)
+* [Descripción de uso y funcionamiento](https://github.com/tresvi/CommandLineParser?tab=readme-ov-file#descripci%C3%B3n-de-uso-y-funcionamiento)
+* [Terminología](https://github.com/tresvi/CommandLineParser?tab=readme-ov-file#terminolog%C3%ADa)
+* [Próximas funcionalidades](https://github.com/tresvi/CommandLineParser?tab=readme-ov-file#pr%C3%B3ximas-funcionalidades)
+
+### Ejemplos
 * [Ejemplo básico](https://github.com/tresvi/CommandLineParser/wiki/Ejemplo-b%C3%A1sico)
 * [Ejemplo Con Checkers y Formatters](https://github.com/tresvi/CommandLineParser/wiki/Ejemplo-con-uso-de-Checkers-y-Formatters)
-
-
+  
 ***
 
 
