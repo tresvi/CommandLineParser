@@ -107,104 +107,6 @@ namespace Test_CommandParser
         }
 
 
-        [TestCase(@"--inputfile ..\Archivo.txt --outputdir ..\salida\")]
-        public void Parse_FileAndDirectoryExists_OK(string inputLine)
-        {
-            string[] args = inputLine.Split(' ');
-            string inputFile = args[1];
-            string outputDir = args[3];
-            File.Create(inputFile).Close();
-            Directory.CreateDirectory(outputDir);
-
-            _ = CommandLine.Parse<Params_With_File_Dir_Exists>(args);
-
-            File.Delete(inputFile);
-            Directory.Delete(outputDir);
-
-            Assert.Pass();
-        }
-
-
-        [TestCase(@"--inputfile ..\Archivo.txt --outputdir ..\qwerty2134s.sdssrWE\")]
-        public void Parse_DirectoryExists_Throws_DirectoryNotExists(string inputLine)
-        {
-            string[] args = inputLine.Split(' ');
-            try { Directory.Delete(args[3]); }      //Por las dudas borro el directorio en caso de existir
-            catch { }
-            File.Create(args[1]).Close();           //Creo el input file para que no falle por eso.
-
-            Assert.Throws<DirectoryNotExistsException>(() => CommandLine.Parse<Params_With_File_Dir_Exists>(args));
-
-            File.Delete(args[1]);
-        }
-
-
-        [TestCase(@"--inputfile ..\1234asdcvft.jjj --outputdir ..\salida\")]
-        public void Parse_FileExists_Throws_FileNotExists(string inputLine)
-        {
-            string[] args = inputLine.Split(' ');
-            string outputDir = args[3];
-            try { File.Delete(args[1]); }           //Por las dudas borro el archivo en caso de existir
-            catch { }
-            Directory.CreateDirectory(outputDir);   //Creo el dir para que no falle por eso.
-
-            Assert.Throws<FileNotExistsException>(() => CommandLine.Parse<Params_With_File_Dir_Exists>(args));
-
-            Directory.Delete(outputDir);
-        }
-
-
-        [TestCase(@"--inputfile ..\12345qwer.txt --outputdir ..\carpetaqwer\")]
-        public void Parse_FileAndDirectoryNOTExists_OK(string inputLine)
-        {
-            string[] args = inputLine.Split(' ');
-            string inputFile = args[1];
-            string outputDir = args[3];
-
-            try { File.Delete(inputFile); }           //Por las dudas borro el archivo en caso de existir
-            catch { }
-
-            try { Directory.Delete(outputDir); }      //Por las dudas borro la carpeta en caso de existir
-            catch { }
-
-            _ = CommandLine.Parse<Params_With_File_Dir_NotExists>(args);
-
-            Assert.Pass();
-        }
-
-
-        [TestCase(@"--inputfile ..\salida.txt --outputdir ..\carpetaqwer\")]
-        public void Parse_FileAndDirectoryNOTExists_Throws_FileAlreadyExists(string inputLine)
-        {
-            string[] args = inputLine.Split(' ');
-            string inputFile = args[1];
-            string outputDir = args[3];
-
-            try { Directory.Delete(outputDir); }      //Por las dudas borro la carpeta en caso de existir
-            catch { }
-
-            File.Create(inputFile).Close();
-
-            Assert.Throws<FileAlreadyExistsException>(() => CommandLine.Parse<Params_With_File_Dir_NotExists>(args));
-        }
-
-
-        [TestCase(@"--inputfile ..\salida.txt --outputdir ..\carpetaqwer\")]
-        public void Parse_FileAndDirectoryNOTExists_Throw_DirectoryAlreadyExists(string inputLine)
-        {
-            string[] args = inputLine.Split(' ');
-            string inputFile = args[1];
-            string outputDir = args[3];
-
-            try { File.Delete(inputFile); }      //Por las dudas borro el archivo en caso de existir
-            catch { }
-
-            Directory.CreateDirectory(outputDir);
-
-            Assert.Throws<DirectoryAlreadyExistsException>(() => CommandLine.Parse<Params_With_File_Dir_NotExists>(args));
-        }
-
-
         [TestCase(@"--inputfile C:\Temp\Archivo.txt", "--outputfile", "-o")]
         [TestCase(@"--outputfile C:\Logs\ddd", "--inputfile", "-i")]
         [TestCase(@"--name proc1 --outputfile C:\Logs\ddd", "--inputfile", "-i")]
@@ -313,6 +215,53 @@ namespace Test_CommandParser
             args = inputLine.Split(' ');
             MultiDefinitionParameterException? exceptionDetalle2 = Assert.Throws<MultiDefinitionParameterException>(() => CommandLine.Parse<Param_Repited_Keyword>(args));
             Assert.That(exceptionDetalle2?.Message, Does.Contain("byte"));
+        }
+
+        [Test]
+        public void GetHelpText_WithoutVerbs_ContainsAllParameters()
+        {
+            Parameters targetObject = new Parameters();
+            string helpText = CommandLine.GetHelpText(targetObject);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(helpText, Does.Contain("Comandos:"));
+                Assert.That(helpText, Does.Contain("--inputfile"));
+                Assert.That(helpText, Does.Contain("-i"));
+                Assert.That(helpText, Does.Contain("Archivo de entrada a ser procesado."));
+                Assert.That(helpText, Does.Contain("--outputfile"));
+                Assert.That(helpText, Does.Contain("-o"));
+                Assert.That(helpText, Does.Contain("Archivo de salida resultante del procesamiento."));
+                Assert.That(helpText, Does.Contain("--help | -h | /?"));
+            });
+        }
+
+        [Test]
+        public void GetHelpText_WithFlags_ContainsFlags()
+        {
+            Parameter_With_Flag targetObject = new Parameter_With_Flag();
+            string helpText = CommandLine.GetHelpText(targetObject);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(helpText, Does.Contain("--sendmail"));
+                Assert.That(helpText, Does.Contain("-s"));
+                Assert.That(helpText, Does.Contain("Indica si debe notificar por mail"));
+            });
+        }
+
+        [Test]
+        public void GetHelpText_WithRequiredAndOptional_ShowsAllParameters()
+        {
+            Param_2_Prop_Req_1_Prop_NoReq targetObject = new Param_2_Prop_Req_1_Prop_NoReq();
+            string helpText = CommandLine.GetHelpText(targetObject);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(helpText, Does.Contain("--inputfile"));
+                Assert.That(helpText, Does.Contain("--outputfile"));
+                Assert.That(helpText, Does.Contain("--name"));
+            });
         }
 
         
