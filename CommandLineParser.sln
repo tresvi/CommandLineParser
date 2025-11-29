@@ -5,13 +5,15 @@ VisualStudioVersion = 17.1.32407.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tresvi.CommandLineParser", "Tresvi.CommandLineParser\Tresvi.CommandLineParser.csproj", "{E0C757E9-FB62-403A-ACAB-EC79B4152626}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ejemplo_NF_4_8", "Ejemplo_NF_4_8\Ejemplo_NF_4_8.csproj", "{2EE4304C-F307-42A1-8DAB-A695509D3686}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basic_Example_2_NF_4_8", "Basic_Example_2_NF_4_8\Basic_Example_2_NF_4_8.csproj", "{2EE4304C-F307-42A1-8DAB-A695509D3686}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tresvi.CommandLineParser.Test.Unit", "Tresvi.CommandLineParser.Test.Unit\Tresvi.CommandLineParser.Test.Unit.csproj", "{B52D10F9-381E-48F1-955D-9CBA95516516}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ejemplos", "Ejemplos", "{3389F58A-B167-45F3-BB00-4F58BC260CE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ejemplo_1", "Ejemplo_1\Ejemplo_1.csproj", "{5BF690BE-FDB6-4888-864E-50BA68A228C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basic_Example_1_NF_4_8", "Basic_Example_1_NF_4_8\Basic_Example_1_NF_4_8.csproj", "{5BF690BE-FDB6-4888-864E-50BA68A228C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiVerbExample_NF_4_8", "MultiVerbExample_NF_4_8\MultiVerbExample_NF_4_8.csproj", "{6ECA804F-7359-438B-958D-91F2A1661F3D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{5BF690BE-FDB6-4888-864E-50BA68A228C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BF690BE-FDB6-4888-864E-50BA68A228C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BF690BE-FDB6-4888-864E-50BA68A228C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ECA804F-7359-438B-958D-91F2A1661F3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ECA804F-7359-438B-958D-91F2A1661F3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ECA804F-7359-438B-958D-91F2A1661F3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ECA804F-7359-438B-958D-91F2A1661F3D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,6 +48,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{2EE4304C-F307-42A1-8DAB-A695509D3686} = {3389F58A-B167-45F3-BB00-4F58BC260CE2}
 		{5BF690BE-FDB6-4888-864E-50BA68A228C7} = {3389F58A-B167-45F3-BB00-4F58BC260CE2}
+		{6ECA804F-7359-438B-958D-91F2A1661F3D} = {3389F58A-B167-45F3-BB00-4F58BC260CE2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E3E3BDCE-37ED-4933-8DED-CEEB852308D2}

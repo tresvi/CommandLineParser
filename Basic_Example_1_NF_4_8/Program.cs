@@ -3,7 +3,7 @@ using Tresvi.CommandParser.Attributtes.Keywords;
 using Tresvi.CommandParser.Exceptions;
 using System;
 
-namespace Ejemplo_1
+namespace Basic_Example_1_NF_4_8
 {
 
     //Clase que Modela los parametros esperados
@@ -23,9 +23,9 @@ namespace Ejemplo_1
     internal class Program
     {
         //Se puede invocar como:
-        //  \>Ejemplo_1.exe --archivo-salida "C:\Temp\archivo1.txt --tamano 120 --notificar
+        //  \>Basic_Example_1_NF_4_8.exe --archivo-salida "C:\Temp\archivo1.txt --tamano 120 --notificar
         // o bien reemplazar el nombre largo de los parametros por los cortos
-        //  \>Ejemplo_1.exe -a "C:\Temp\archivo1.txt -t 120 --notificar
+        //  \>Basic_Example_1_NF_4_8.exe -a "C:\Temp\archivo1.txt -t 120 --notificar
         static void Main(string[] args)
         {
             try

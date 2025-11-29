@@ -105,10 +105,16 @@ Nota: Todos los terminos mencionados son **case sensitive**.
 ## Próximas funcionalidades
 ...
 
-
-
 [Sobre este repositorio]()
 ***
+
+## Links y bibliografía de interes:
+
+* The Art of UNIX Programming - Libro de Eric S. Raymond
+* [https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html)
+* [https://tldp.org/LDP/abs/html/standard-options.html](https://tldp.org/LDP/abs/html/standard-options.html)
+* [https://www.gnu.org/prep/standards/html_node/Command_002dLine-Interfaces.html](https://www.gnu.org/prep/standards/html_node/Command_002dLine-Interfaces.html)
+* [https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-run](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-run)
 
 
 
