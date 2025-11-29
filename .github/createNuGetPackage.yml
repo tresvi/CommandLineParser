@@ -28,9 +28,9 @@ jobs:
     - name: 'Determine Version'
       id: gitversion
       uses: gittools/actions/gitversion/execute@v0.9.7
-#      with:
-#        useConfigFile: true
-#        configFilePath: ./.github/gitversion.yml
+      with:
+        useConfigFile: true
+        configFilePath: ./.github/gitversion.yml
 
     - name: 'Restore packages'
       run: dotnet restore ${{ env.PROJECT_PATH }}

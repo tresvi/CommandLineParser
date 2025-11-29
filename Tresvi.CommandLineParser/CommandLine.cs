@@ -1,9 +1,7 @@
 ﻿using Tresvi.CommandParser.Attributtes.Keywords;
 using Tresvi.CommandParser.Exceptions;
-using Tresvi.CommandParser.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
@@ -170,57 +168,105 @@ namespace Tresvi.CommandParser
 
 
         /// <summary>
-        /// Analiza los argumentos para completar la clase que corresponda segun el Verbo solicitado
+        /// Analiza los argumentos para completar la clase que corresponda según el Verbo solicitado
+        /// entre las clases especificadas.
+        /// </summary>
+        /// <param name="args">Argumentos obtenidos de la linea de comando</param>
+        /// <param name="verbTypes">Conjunto de tipos que representan clases Verbo decoradas con <see cref="VerbAttribute"/>.</param>
+        /// <returns>Instancia de la clase Verbo correspondiente al verbo detectado en la línea de comandos.</returns>
+        /// <exception cref="NotDefaultVerbException">Si no se especifica ningún verbo en la línea de comandos.</exception>
+        /// <exception cref="NotVerbClassException">Si alguna de las clases indicadas no está decorada con <see cref="VerbAttribute"/>.</exception>
+        /// <exception cref="UnknownVerbException">Si el verbo indicado no coincide con ninguno de los verbos disponibles.</exception>
+        public static object Parse(string[] args, params Type[] verbTypes)
+        {
+            if (verbTypes == null || verbTypes.Length == 0)
+                throw new ArgumentException("Debe especificar al menos una clase verbo.", nameof(verbTypes));
+
+            if (args == null)
+                throw new ArgumentNullException(nameof(args));
+
+            if (args.Length == 0)
+                throw new NotDefaultVerbException("Debe especificar un verbo en la linea de comandos");
+
+            string searchedVerb = args[0];
+
+            if (string.IsNullOrWhiteSpace(searchedVerb))
+                throw new NotDefaultVerbException("Debe especificar un verbo en la linea de comandos");
+
+            if (searchedVerb.Trim().StartsWith("--") || searchedVerb.Trim().StartsWith("-"))
+                throw new UnknownVerbException($"{searchedVerb} no es un nombre de verbo valido.");
+
+            // Recorremos los tipos candidatos buscando el que tenga el VerbAttribute con el nombre adecuado
+            List<string> verbsAvailable = new List<string>();
+            Type targetVerbType = null;
+
+            foreach (Type verbType in verbTypes)
+            {
+                if (verbType == null) continue;
+
+                Attribute verbAttributeRaw = verbType.GetCustomAttribute(typeof(VerbAttribute));
+                if (verbAttributeRaw == null)
+                    throw new NotVerbClassException($"La clase {verbType.Name} fue utilizada como un verbo, pero no fue decorada como {typeof(VerbAttribute).Name}");
+
+                VerbAttribute verbAttribute = (VerbAttribute)verbAttributeRaw;
+                verbsAvailable.Add(verbAttribute.Name);
+
+                if (verbAttribute.Name == searchedVerb)
+                    targetVerbType = verbType;
+            }
+
+            if (targetVerbType == null)
+                throw new UnknownVerbException($"{searchedVerb} no es un nombre de verbo valido. Debe especificar alguno de los siguientes: {string.Join(" | ", verbsAvailable)}");
+
+            // Elimino el verbo de la lista de argumentos
+            List<string> argsList = new List<string>(args);
+            argsList.RemoveAt(0);
+            string[] remainingArgs = argsList.ToArray();
+
+            // Reutilizo el Parse<T>(string[] args) existente vía reflexión para no duplicar lógica.
+            MethodInfo genericParseMethod = null;
+            foreach (MethodInfo method in typeof(CommandLine).GetMethods(BindingFlags.Public | BindingFlags.Static))
+            {
+                if (method.Name == nameof(Parse)
+                    && method.IsGenericMethodDefinition
+                    && method.GetGenericArguments().Length == 1
+                    && method.GetParameters().Length == 1
+                    && method.GetParameters()[0].ParameterType == typeof(string[]))
+                {
+                    genericParseMethod = method;
+                    break;
+                }
+            }
+            if (genericParseMethod == null || !genericParseMethod.IsGenericMethodDefinition)
+                throw new InvalidOperationException("No se encontró el método genérico Parse<T>(string[] args).");
+
+            MethodInfo concreteParseMethod = genericParseMethod.MakeGenericMethod(targetVerbType);
+
+            try
+            {
+                return concreteParseMethod.Invoke(null, new object[] { remainingArgs });
+            }
+            catch (TargetInvocationException ex) when (ex.InnerException != null)
+            {
+                // Propaga la excepción real lanzada dentro de Parse<T>
+                throw ex.InnerException;
+            }
+        }
+
+
+        /// <summary>
+        /// Analiza los argumentos para completar la clase que corresponda segun el Verbo solicitado,
+        /// considerando dos posibles clases Verbo.
         /// </summary>
         /// <typeparam name="T1">Clase que representa al Verbo 1 a rellenar con los parametros si su verbo es el solicitado</typeparam>
         /// <typeparam name="T2">Clase Verbo 2</typeparam>
         /// <param name="args">Argumentos obtenidos de la linea de comando</param>
-        /// <returns></returns>
-        /// <exception cref="UnknownVerbException"></exception>
+        /// <returns>Instancia de la clase Verbo correspondiente.</returns>
         public static object Parse<T1, T2>(string[] args)
             where T1 : new()
             where T2 : new()
         {
-            throw new NotImplementedException();
-            /*
-            List<string> verbsAvailable = VerbHelper.ValidateVerbDecoration<T1, T2>();
-            //List<string> defaultVerbs = VerbHelper.DetectDefaultVerbs<T1, T2>();
-
-
-            //if (defaultVerbs.Count > 1)
-            //    throw new ToManyDefaultVerbsException($"Se han especificado mas de un verbo como Default, solo puede haber 1: Verbos Default: {string.Join( " | ", defaultVerbs) }");
-
-            //TODO: UseFirstClassAsDefault, o metodo que pregunta Clase Default
-            //Retorno de valor por default si fue definido
-            //if (args.Length == 0)
-            //{
-            //    if (defaultVerbs.Count == 0)
-            //        throw new NotDefaultVerbException("Debe especificar un verbo en la linea de comandos");
-            //    else
-            //    {
-            //        //TODO: Recorrer cada TX en busca del primer default y llamo a Parse con su tipo.
-
-            //    } 
-            //}
-
-            //if (args.Length == 0) throw new NotDefaultVerbException("No especificó ningun verbo como Default");
-
-            string searchedVerb = args[0];
-
-            if (searchedVerb.Trim().StartsWith("--") || searchedVerb.Trim().StartsWith("-"))
-                throw new UnknownVerbException($"{searchedVerb} no es un nombre de verbo valido. Debe especificar alguno de los siguientes: {string.Join(" | ", verbsAvailable)}");
-
-            List<string> argsList = new List<string>(args);
-            argsList.RemoveAt(0);
-            args = argsList.ToArray();
-
-            if (VerbHelper.CheckIfVerbIsInClass<T1>(searchedVerb))
-                return Parse<T1>(args);
-            else if (VerbHelper.CheckIfVerbIsInClass<T2>(searchedVerb))
-                return Parse<T2>(args);
-            else
-                throw new UnknownVerbException($"{searchedVerb} no es un nombre de verbo valido. Debe especificar alguno de los siguientes: {string.Join(" | ", verbsAvailable)}");
-            */
+            return Parse(args, typeof(T1), typeof(T2));
         }
 
 
@@ -242,7 +288,6 @@ namespace Tresvi.CommandParser
 
         private static void PrintHelp(object targetObject)
         {
-
             StringBuilder sb = new StringBuilder();
             string helpLine = "";
             sb.AppendLine("Comandos:");
@@ -281,6 +326,8 @@ namespace Tresvi.CommandParser
             }
             return argumentosDefinidos;
         }
+
+
         public static List<string> GetDefinedParameters2<T>() where T : new()
         {
             HttpClientHandler clientHandler = new HttpClientHandler();

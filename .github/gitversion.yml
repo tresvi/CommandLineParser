@@ -2,6 +2,7 @@ mode: Mainline
 branches:
   main:
     tag: ''
-    increment: Major
+    increment: Patch
+next-version: 1.0.1
 ignore:
   sha: []
