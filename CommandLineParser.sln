@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ejemplos", "Ejemplos", "{33
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basic_Example_1_NF_4_8", "Basic_Example_1_NF_4_8\Basic_Example_1_NF_4_8.csproj", "{5BF690BE-FDB6-4888-864E-50BA68A228C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParamValidation_Example_NF_4_8", "ParamValidation_Example_NF_4_8\ParamValidation_Example_NF_4_8.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParamValidation_Example_NF_4_8", "ParamValidation_example_NF_4_8\ParamValidation_Example_NF_4_8.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiVerb_Example_NF_4_8", "MultiVerb_Example_NF_4_8\MultiVerb_Example_NF_4_8.csproj", "{6ECA804F-7359-438B-958D-91F2A1661F3D}"
 EndProject
