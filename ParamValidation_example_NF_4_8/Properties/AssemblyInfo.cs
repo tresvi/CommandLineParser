@@ -1,15 +1,16 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // La información general de un ensamblado se controla mediante el siguiente 
 // conjunto de atributos. Cambie estos valores de atributo para modificar la información
 // asociada a un ensamblado.
-[assembly: AssemblyTitle("MultiVerb_Example_NF_4_8")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("ParamValidation_Example_NF_4_8")]
+[assembly: AssemblyDescription("Ejemplo de uso de validadores de parámetros")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MultiVerb_Example_NF_4_8")]
-[assembly: AssemblyCopyright("Copyright ©  2022")]
+[assembly: AssemblyProduct("ParamValidation_Example_NF_4_8")]
+[assembly: AssemblyCopyright("Copyright ©  2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -19,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // El siguiente GUID sirve como id. de typelib si este proyecto se expone a COM.
-[assembly: Guid("6eca804f-7359-438b-958d-91f2a1661f3d")]
+[assembly: Guid("a1b2c3d4-e5f6-7890-abcd-ef1234567890")]
 
 // La información de versión de un ensamblado consta de los cuatro valores siguientes:
 //
