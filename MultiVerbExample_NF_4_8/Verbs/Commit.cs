@@ -1,15 +1,15 @@
-﻿using Tresvi.CommandParser.Attributtes.Keywords;
+using Tresvi.CommandParser.Attributtes.Keywords;
 
-namespace Test_CommandParser.Models.Verbs
+namespace MultiVerbExample_NF_4_8.Verbs
 {
     [Verb("commit", "Comando para confirmar cambios")]
-    internal class Commit
+    public class Commit
     {
         [Option("file", 'f', true, "", "Ruta del archivo a confirmar")]
-        public string? File { get; set; }
-
+        public string File { get; set; }
 
         [Option("message", 'm', true, "", "Breve descripcion de las modificaciones")]
-        public string? Message { get; set; }
+        public string Message { get; set; }
     }
 }
+

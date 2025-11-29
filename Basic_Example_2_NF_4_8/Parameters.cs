@@ -3,17 +3,10 @@ using Tresvi.CommandParser.Attributes.Validation;
 using Tresvi.CommandParser.Attributtes.Keywords;
 using System;
 
-namespace Ejemplo_NF_4_8
+namespace Basic_Example_2_NF_4_8
 {
-    // [Verb("Commit", "Es un commit")]
     public class Parameters
     {
-        //The Art of UNIX Programming
-        //https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html
-        //https://tldp.org/LDP/abs/html/standard-options.html
-        //https://www.gnu.org/prep/standards/html_node/Command_002dLine-Interfaces.html
-        //https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-run
-
         [FileExists]
         [Option("inputfile", 'i', true, HelpText = "Archivo de entrada a ser procesado.")]
         public string InputFile { get; set; }
@@ -31,8 +24,6 @@ namespace Ejemplo_NF_4_8
 
         [Option("reintentos", 'r', true, HelpText = "Fecha en la cual se realiza el procesamiento.")]
         public int Reintentos { get; set; }
-
-
     }
 
 }
