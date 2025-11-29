@@ -2,7 +2,6 @@
 using Tresvi.CommandParser.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Reflection;
 using System.Text;
 
@@ -308,6 +307,11 @@ namespace Tresvi.CommandParser
         }
 
 
+        /// <summary>
+        /// Obtiene la lista de todos los parámetros definidos en una clase de parámetros.
+        /// </summary>
+        /// <typeparam name="T">Tipo de la clase que contiene las propiedades decoradas con atributos de argumentos (OptionAttribute, FlagAttribute, etc.).</typeparam>
+        /// <returns>Lista de strings que contiene todos los keywords (nombres largos y cortos) de los parámetros definidos en la clase.</returns>
         public static List<string> GetDefinedParameters<T>() where T : new()
         {
             T targetObject = new T();
@@ -326,42 +330,6 @@ namespace Tresvi.CommandParser
             }
             return argumentosDefinidos;
         }
-
-
-        public static List<string> GetDefinedParameters2<T>() where T : new()
-        {
-            HttpClientHandler clientHandler = new HttpClientHandler();
-            HttpClient HTTP_CLIENT = new HttpClient(clientHandler);
-            HTTP_CLIENT.BaseAddress = new Uri("www.pirulo.com/api");
-
-            T targetObject = new T();
-            List<String> argumentosDefinidos = new List<string>();
-
-            foreach (PropertyInfo property in targetObject.GetType().GetProperties())
-            {
-                foreach (Attribute attribute in property.GetCustomAttributes(true))
-                {
-                    if (attribute is BaseArgumentAttribute argument)
-                    {
-                        argumentosDefinidos.Add(argument.Keyword);
-                        argumentosDefinidos.Add(argument.ShortKeyword);
-                    }
-                }
-            }
-            return argumentosDefinidos;
-        }
-
-        //Funcion para hacer saltar las alarmas de los analizadores de codigo
-        /*    public static void FuncionAlertaDeAnalisis()
-            {
-                NetworkCredential networkCredential = new NetworkCredential("EsUnUsuario", "Contrasenia", "Dominio");
-                HttpClientHandler clientHandler = new HttpClientHandler();
-                clientHandler.Credentials = networkCredential;
-                HttpClient HTTP_CLIENT = new HttpClient(clientHandler);
-                HTTP_CLIENT.BaseAddress = new Uri("www.pirulo.com/api");
-                _ = HTTP_CLIENT.GetAsync("consulta");
-            }
-        */
 
     }
 }

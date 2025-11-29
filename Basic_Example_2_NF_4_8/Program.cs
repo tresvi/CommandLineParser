@@ -4,8 +4,11 @@ using System;
 using System.Reflection;
 using System.Text;
 
-namespace Ejemplo_NF_4_8
+namespace Basic_Example_2_NF_4_8
 {
+    /* Ejemplo de invocación:
+     * \>Basic_Example_2_NF_4_8.exe --fechaproceso 20211229 --inputfile "C:\Temp\Archivo.txt" --outputfile "C:\Logs\ddd"  --reintentos 2
+     */
     internal static class Program
     {
         static void Main(string[] args)

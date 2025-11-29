@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2EE4304C-F307-42A1-8DAB-A695509D3686}</ProjectGuid>
+    <ProjectGuid>{5BF690BE-FDB6-4888-864E-50BA68A228C7}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Ejemplo_NF_4_8</RootNamespace>
-    <AssemblyName>Ejemplo_NF_4_8</AssemblyName>
+    <RootNamespace>Basic_Example_1_NF_4_8</RootNamespace>
+    <AssemblyName>Basic_Example_1_NF_4_8</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -44,7 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Parameters.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
