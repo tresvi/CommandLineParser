@@ -1,6 +1,6 @@
 using Tresvi.CommandParser.Attributtes.Keywords;
 
-namespace MultiVerbExample_NF_4_8.Verbs
+namespace MultiVerb_Example_NF_4_8.Verbs
 {
     [Verb("delete", "Comando para eliminar archivo")]
     public class Delete

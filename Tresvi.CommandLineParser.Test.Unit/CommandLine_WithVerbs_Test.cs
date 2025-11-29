@@ -128,5 +128,82 @@ namespace Test_CommandParser
                 throw new Exception($"Verbo \"{expectedVerb}\" desconocido, revise el caso de uso");
         }
 
+        [Test]
+        public void GetHelpTextForVerbs_WithTwoVerbs_ContainsAllVerbsAndParameters()
+        {
+            string helpText = CommandLine.GetHelpTextForVerbs(typeof(Add), typeof(Edit));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(helpText, Does.Contain("Verbos disponibles:"));
+                Assert.That(helpText, Does.Contain("add"));
+                Assert.That(helpText, Does.Contain("Agrega una instancia"));
+                Assert.That(helpText, Does.Contain("--directory"));
+                Assert.That(helpText, Does.Contain("-d"));
+                Assert.That(helpText, Does.Contain("Carpeta donde se creará el archivo"));
+                Assert.That(helpText, Does.Contain("--name"));
+                Assert.That(helpText, Does.Contain("-n"));
+                Assert.That(helpText, Does.Contain("Nombre del archivo a crear con su extensión"));
+                Assert.That(helpText, Does.Contain("edit"));
+                Assert.That(helpText, Does.Contain("Comando para editar"));
+                Assert.That(helpText, Does.Contain("--file"));
+                Assert.That(helpText, Does.Contain("-f"));
+                Assert.That(helpText, Does.Contain("Ruta del archivo a editar"));
+                Assert.That(helpText, Does.Contain("--fecha"));
+                Assert.That(helpText, Does.Contain("-F"));
+                Assert.That(helpText, Does.Contain("--help | -h | /?"));
+            });
+        }
+
+        [Test]
+        public void GetHelpTextForVerbs_WithFourVerbs_ContainsAllVerbs()
+        {
+            string helpText = CommandLine.GetHelpTextForVerbs(typeof(Add), typeof(Edit), typeof(Delete), typeof(Commit));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(helpText, Does.Contain("add"));
+                Assert.That(helpText, Does.Contain("edit"));
+                Assert.That(helpText, Does.Contain("delete"));
+                Assert.That(helpText, Does.Contain("commit"));
+            });
+        }
+
+        [Test]
+        public void GetHelpTextForVerbs_WithRequiredParameters_ShowsRequiredText()
+        {
+            string helpText = CommandLine.GetHelpTextForVerbs(typeof(Add));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(helpText, Does.Contain("(Requerido)"));
+                // Verificar que aparece junto a los parámetros requeridos
+                int requiredIndex = helpText.IndexOf("(Requerido)");
+                int directoryIndex = helpText.IndexOf("--directory");
+                int nameIndex = helpText.IndexOf("--name");
+                
+                Assert.That(requiredIndex, Is.GreaterThan(-1), "Debe contener '(Requerido)'");
+                Assert.That(directoryIndex, Is.GreaterThan(-1), "Debe contener '--directory'");
+                Assert.That(nameIndex, Is.GreaterThan(-1), "Debe contener '--name'");
+            });
+        }
+
+        [Test]
+        public void GetHelpTextForVerbs_WithMultipleVerbs_ShowsCorrectFormatting()
+        {
+            string helpText = CommandLine.GetHelpTextForVerbs(typeof(Add), typeof(Edit));
+
+            // Verificar que cada verbo tiene su sección con indentación correcta
+            int addIndex = helpText.IndexOf("add");
+            int editIndex = helpText.IndexOf("edit");
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(addIndex, Is.GreaterThan(-1), "Debe contener 'add'");
+                Assert.That(editIndex, Is.GreaterThan(-1), "Debe contener 'edit'");
+                Assert.That(editIndex, Is.GreaterThan(addIndex), "edit debe aparecer después de add");
+            });
+        }
+
     }
 }

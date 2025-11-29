@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{6ECA804F-7359-438B-958D-91F2A1661F3D}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>MultiVerbExample_NF_4_8</RootNamespace>
-    <AssemblyName>MultiVerbExample_NF_4_8</AssemblyName>
+    <RootNamespace>MultiVerb_Example_NF_4_8</RootNamespace>
+    <AssemblyName>MultiVerb_Example_NF_4_8</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

@@ -2,7 +2,7 @@ using Tresvi.CommandParser.Attributes.Formatter;
 using Tresvi.CommandParser.Attributtes.Keywords;
 using System;
 
-namespace MultiVerbExample_NF_4_8.Verbs
+namespace MultiVerb_Example_NF_4_8.Verbs
 {
     [Verb("edit", "Comando para editar")]
     public class Edit
