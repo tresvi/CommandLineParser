@@ -1,17 +1,17 @@
 using Tresvi.CommandParser;
 using Tresvi.CommandParser.Exceptions;
-using MultiVerbExample_NF_4_8.Verbs;
+using MultiVerb_Example_NF_4_8.Verbs;
 using System;
 
 
 /* Comandos para probar:
- *  .\MultiVerbExample_NF_4_8.exe add -d "C:\Temp" -n "test.txt"
- *  .\MultiVerbExample_NF_4_8.exe edit -f "C:\Temp\test.txt" -F 20241129
- *  .\MultiVerbExample_NF_4_8.exe delete -f "C:\Temp\test.txt"
- *  .\MultiVerbExample_NF_4_8.exe commit -f "C:\Temp\test.txt" -m "Primer commit"
+ *  .\MultiVerb_Example_NF_4_8.exe add -d "C:\Temp" -n "test.txt"
+ *  .\MultiVerb_Example_NF_4_8.exe edit -f "C:\Temp\test.txt" -F 20241129
+ *  .\MultiVerb_Example_NF_4_8.exe delete -f "C:\Temp\test.txt"
+ *  .\MultiVerb_Example_NF_4_8.exe commit -f "C:\Temp\test.txt" -m "Primer commit"
  */
 
-namespace MultiVerbExample_NF_4_8
+namespace MultiVerb_Example_NF_4_8
 {
     internal static class Program
     {

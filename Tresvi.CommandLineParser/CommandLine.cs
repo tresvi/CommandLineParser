@@ -7,12 +7,9 @@ using System.Text;
 
 namespace Tresvi.CommandParser
 {
-    //TODO: Agregar formatter de IP y de Direccion de Mail
     //TODO: Agregar un attribute nivel clase para documentacion extra en el helptext. Prto ejemplo explicacion que que hace el programa.
     //TODO: Agregar el RangeValidationAttribute.
-    //TODO: Agregar el StringListValidationAttribute.
-    //TODO: Arreglar metodo Help para que incluya informacion de Verbos.
-    //TODO: Agregar un metodo de validacion de clases verbo. que ambas no repitan el mismo verbo.
+    //TODO: Agregar un metodo de validacion de clases verbo. que ambas no repitan el mismo verbo. NO, SE DESCARTA
     //TODO: Analizar la posibilidad de definir un verbo por default (que se tome en caso de que no se escriba nada) para futuras versiones.
     //TODO: Reconocer enumeraciones por su nombre.
     public static class CommandLine
@@ -32,7 +29,7 @@ namespace Tresvi.CommandParser
 
             if (IsHelpRequested(CLI_Arguments))
             {
-                PrintHelp(targetObject);
+                Console.WriteLine(GetHelpText(targetObject));
                 Environment.Exit(0);
             }
 
@@ -81,7 +78,6 @@ namespace Tresvi.CommandParser
                         matchCounter++;
                         foundAttribute = attribute;
                         propertyOut = property;
-
                     }
                 }
             }
@@ -125,9 +121,7 @@ namespace Tresvi.CommandParser
         /// <summary>
         /// Revisa que no haya definiciones duplicadas de keywords y shortkeywords dentro de la clase de destino
         /// </summary>
-        /// <param name="keywordsFound"></param>
-        /// <param name="targetObject"></param>
-        /// <exception cref="RequiredParameterNotFoundException"></exception>
+        /// <exception cref="MultiDefinitionParameterException"></exception>
         private static void CheckForDuplicatedKeywordInClass<T>() where T : new()
         {
             T targetObject = new T();
@@ -184,6 +178,12 @@ namespace Tresvi.CommandParser
             if (args == null)
                 throw new ArgumentNullException(nameof(args));
 
+            if (args.Length > 0 && IsHelpRequested(new List<string>(args)))
+            {
+                Console.WriteLine(GetHelpTextForVerbs(verbTypes));
+                Environment.Exit(0);
+            }
+
             if (args.Length == 0)
                 throw new NotDefaultVerbException("Debe especificar un verbo en la linea de comandos");
 
@@ -236,7 +236,7 @@ namespace Tresvi.CommandParser
                     break;
                 }
             }
-            if (genericParseMethod == null || !genericParseMethod.IsGenericMethodDefinition)
+            if (genericParseMethod == null)
                 throw new InvalidOperationException("No se encontró el método genérico Parse<T>(string[] args).");
 
             MethodInfo concreteParseMethod = genericParseMethod.MakeGenericMethod(targetVerbType);
@@ -285,10 +285,14 @@ namespace Tresvi.CommandParser
         }
 
 
-        private static void PrintHelp(object targetObject)
+        /// <summary>
+        /// Genera el texto de ayuda para una clase de parámetros sin verbos.
+        /// </summary>
+        /// <param name="targetObject">Instancia de la clase de parámetros.</param>
+        /// <returns>String con el texto de ayuda formateado.</returns>
+        public static string GetHelpText(object targetObject)
         {
             StringBuilder sb = new StringBuilder();
-            string helpLine = "";
             sb.AppendLine("Comandos:");
 
             foreach (PropertyInfo property in targetObject.GetType().GetProperties())
@@ -297,14 +301,65 @@ namespace Tresvi.CommandParser
                 {
                     if (attribute is BaseArgumentAttribute argument)
                     {
-                        helpLine = $"{argument.Keyword} | {argument.ShortKeyword}\t\t{argument.HelpText}";
-                        sb.AppendLine(helpLine);
+                        sb.AppendLine($"{argument.Keyword} | {argument.ShortKeyword}\t\t{argument.HelpText}");
                     }
                 }
             }
             sb.AppendLine(HELP_TEXT);
-            Console.WriteLine(sb.ToString());
+            return sb.ToString();
         }
+
+
+
+        /// <summary>
+        /// Genera el texto de ayuda para todos los verbos disponibles con sus parámetros.
+        /// </summary>
+        /// <param name="verbTypes">Tipos de clases verbo para los cuales generar la ayuda.</param>
+        /// <returns>String con el texto de ayuda formateado.</returns>
+        public static string GetHelpTextForVerbs(params Type[] verbTypes)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Verbos disponibles:");
+            sb.AppendLine();
+
+            foreach (Type verbType in verbTypes)
+            {
+                if (verbType == null) continue;
+
+                Attribute verbAttributeRaw = verbType.GetCustomAttribute(typeof(VerbAttribute));
+                if (verbAttributeRaw == null) continue;
+
+                VerbAttribute verbAttribute = (VerbAttribute)verbAttributeRaw;
+
+                // Mostrar nombre del verbo y su helptext
+                sb.AppendLine($"  {verbAttribute.Name,-12} {verbAttribute.HelpText}");
+
+                // Mostrar parámetros del verbo
+                foreach (PropertyInfo property in verbType.GetProperties())
+                {
+                    foreach (Attribute attribute in property.GetCustomAttributes(true))
+                    {
+                        if (attribute is BaseArgumentAttribute argument)
+                        {
+                            string requiredText = "";
+                            if (argument is OptionAttribute option && option.IsRequired)
+                            {
+                                requiredText = "(Requerido) ";
+                            }
+
+                            sb.AppendLine($"    {argument.Keyword} | {argument.ShortKeyword,-3}    {requiredText}{argument.HelpText}");
+                        }
+                    }
+                }
+
+                sb.AppendLine();
+            }
+
+            sb.AppendLine(HELP_TEXT);
+            return sb.ToString();
+        }
+
+
 
 
         /// <summary>
