@@ -37,7 +37,10 @@ jobs:
 
     # Create the NuGet package in the folder from the environment variable NuGetDirectory
     #- run: dotnet pack --configuration Release --output ${{ env.NuGetDirectory }}
-    - run: dotnet pack ${{ env.PROJECT_PATH }} --configuration Release --output ${{ env.NuGetDirectory }}
+    - run: |
+      $version = "${{ github.event.release.tag_name }}"
+      if ($version.StartsWith('v')) { $version = $version.Substring(1) }
+      dotnet pack ${{ env.PROJECT_PATH }} --configuration Release --output ${{ env.NuGetDirectory }} /p:Version=$version /p:PackageVersion=$version
 
     # Publish the NuGet package as an artifact, so they can be used in the following jobs
     - uses: actions/upload-artifact@v4
