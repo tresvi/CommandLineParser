@@ -1,6 +1,6 @@
 using Tresvi.CommandParser.Attributtes.Keywords;
 
-namespace MultiVerbExample_NF_4_8.Verbs
+namespace MultiVerb_Example_NF_4_8.Verbs
 {
     [Verb("commit", "Comando para confirmar cambios")]
     public class Commit
