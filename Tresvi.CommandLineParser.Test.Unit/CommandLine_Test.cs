@@ -167,6 +167,19 @@ namespace Test_CommandParser
             Assert.That(exceptionDetalle?.Message, Does.Contain(repeatedParameter));
         }
 
+        [TestCase(@"--outputfile C:\Logs\out.txt -o C:\Logs\out2.txt", "outputfile")]
+        [TestCase(@"-o C:\Logs\out.txt --outputfile C:\Logs\out2.txt", "outputfile")]
+        [TestCase(@"--inputfile C:\Logs\in.txt -i C:\Logs\in2.txt", "inputfile")]
+        [TestCase(@"-i C:\Logs\in.txt --inputfile C:\Logs\in2.txt", "inputfile")]
+        [TestCase(@"--outputfile C:\Logs\out.txt --outputfile C:\Logs\out2.txt", "outputfile")]
+        [TestCase(@"-o C:\Logs\out.txt -o C:\Logs\out2.txt", "outputfile")]
+        public void Parse_MixedLongAndShortKeyword_Throws_MultiInvocationParameter(string inputLine, string repeatedParameter)
+        {
+            string[] args = inputLine.Split(' ');
+            MultiInvocationParameterException? exceptionDetalle = Assert.Throws<MultiInvocationParameterException>(() => CommandLine.Parse<Parameter_With_Flag>(args));
+            Assert.That(exceptionDetalle?.Message, Does.Contain(repeatedParameter));
+        }
+
 
         [TestCase(@"--fecha-inicial 19811229 --fecha-final 206710")]
         [TestCase(@"--fecha-inicial 19811229 -F 206710")]
