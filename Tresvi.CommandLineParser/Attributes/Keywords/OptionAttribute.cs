@@ -57,25 +57,27 @@ namespace Tresvi.CommandParser.Attributtes.Keywords
             // Si es nullable, usar el tipo subyacente para el parsing
             if (isNullable)
                 propertyType = underlyingType;
-/*
+
             if (property.PropertyType == typeof(string) || property.PropertyType == typeof(DateTime))
             {
-                if (isNullable) {property.SetValue(targetObject, (propertyType?)value);}
+                if (isNullable) {property.SetValue(targetObject, value);}
                 else {property.SetValue(targetObject, value);}
 
                 return;
             }
-*/
 
+/*
             // Manejar string (no nullable, pero puede ser string?)
             if (propertyType == typeof(string))
             {
                 property.SetValue(targetObject, value);
                 return;
             }
+*/
 
             string rawFieldContent = (string)value;
 
+/*
             // Manejar DateTime (tanto DateTime como DateTime?)
             if (propertyType == typeof(DateTime))
             {
@@ -89,7 +91,7 @@ namespace Tresvi.CommandParser.Attributtes.Keywords
 
                 return;
             }
-
+*/
             ///Reviso si la asignacion se hace a alguna property de algun tipo entero
             string parseErrorMessage = $"El parametro \"{argumentName}\" no acepta el valor \"{rawFieldContent}\" como " +
                 $"valor entero válido. Verifique que el valor sea numerico y esté dentro del rango correspondiente";
