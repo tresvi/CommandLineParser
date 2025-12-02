@@ -2,7 +2,7 @@
 
 namespace Tresvi.CommandParser.Exceptions
 {
-    internal class ParseValueException : CommandParserBaseException
+    public class ParseValueException : CommandParserBaseException
     {
         public ParseValueException() { }
         public ParseValueException(string message) : base(message) { }

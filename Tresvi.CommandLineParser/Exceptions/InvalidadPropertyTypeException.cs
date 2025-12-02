@@ -2,7 +2,7 @@
 
 namespace Tresvi.CommandParser.Exceptions
 {
-    internal class InvalidadPropertyTypeException : CommandParserBaseException
+    public class InvalidadPropertyTypeException : CommandParserBaseException
     {
         public InvalidadPropertyTypeException() { }
         public InvalidadPropertyTypeException(string message) : base(message) { }
