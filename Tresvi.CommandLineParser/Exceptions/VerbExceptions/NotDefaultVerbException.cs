@@ -2,7 +2,7 @@
 
 namespace Tresvi.CommandParser.Exceptions
 {
-    internal class NotDefaultVerbException : CommandParserBaseException
+    public class NotDefaultVerbException : CommandParserBaseException
     {
         public NotDefaultVerbException() { }
         public NotDefaultVerbException(string message) : base(message) { }

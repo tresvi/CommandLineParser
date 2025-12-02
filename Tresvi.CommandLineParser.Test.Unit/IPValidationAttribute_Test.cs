@@ -182,13 +182,24 @@ namespace Test_CommandParser
 
         [TestCase(@"--ipaddress 192.168.1.1")]
         [TestCase(@"--ipaddress 10.0.0.1")]
-        public void Parse_IPValidation_WithPort_IPWithoutPort_Throws(string inputLine)
+        public void Parse_IPValidation_WithPort_PortIsOptional_OK(string inputLine)
+        {
+            string[] args = inputLine.Split(' ');
+            Params_With_IPValidation_WithPort result = CommandLine.Parse<Params_With_IPValidation_WithPort>(args);
+
+            Assert.IsNotNull(result.IPAddress);
+            Assert.AreEqual(args[1], result.IPAddress);
+        }
+
+        [TestCase(@"--ipaddress 192.168.1.1")]
+        [TestCase(@"--ipaddress [::1]")]
+        public void Parse_IPValidation_PortRequired_IPWithoutPort_Throws(string inputLine)
         {
             string[] args = inputLine.Split(' ');
             InvalidIPAddressException? exception = Assert.Throws<InvalidIPAddressException>(
-                () => CommandLine.Parse<Params_With_IPValidation_WithPort>(args));
+                () => CommandLine.Parse<Params_With_IPValidation_PortRequired>(args));
 
-            Assert.That(exception?.Message, Does.Contain("puerto").Or.Contain("debe incluir"));
+            Assert.That(exception?.Message, Does.Contain("debe incluir un puerto"));
         }
 
         [TestCase(@"--ipaddress 192.168.1.1:8080", "puerto")]
