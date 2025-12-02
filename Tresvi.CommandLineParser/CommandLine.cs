@@ -347,7 +347,7 @@ namespace Tresvi.CommandParser
                                 requiredText = "(Requerido) ";
                             }
 
-                            sb.AppendLine($"    {argument.Keyword} | {argument.ShortKeyword,-3}    {requiredText}{argument.HelpText}");
+                            sb.AppendLine($"    {argument.Keyword} | {argument.ShortKeyword,-3}\t{requiredText}{argument.HelpText}");
                         }
                     }
                 }
