@@ -10,13 +10,11 @@ namespace Tresvi.CommandParser.Attributtes.Keywords
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class OptionAttribute : BaseArgumentAttribute
     {
-        public string DefaultValue { get; set; }
-        public bool IsRequired { get; set; }
+        internal bool IsRequired { get; set; }
 
-        public OptionAttribute(string keyword, char shortKeyword, bool isRequired, string defaultValue = "", string helpText = "")
+        public OptionAttribute(string keyword, char shortKeyword, bool isRequired, string helpText = "")
             : base(keyword, shortKeyword, helpText)
         {
-            DefaultValue = defaultValue;
             IsRequired = isRequired;
         }
 

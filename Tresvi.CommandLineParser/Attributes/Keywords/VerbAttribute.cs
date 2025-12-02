@@ -5,8 +5,8 @@ namespace Tresvi.CommandParser.Attributtes.Keywords
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class VerbAttribute : Attribute
     {
-        public string Name { get; set; }
-        public string HelpText { get; set; }
+        internal string Name { get; set; }
+        internal string HelpText { get; set; }
         //public bool IsDefault { get; set; }
 
 
