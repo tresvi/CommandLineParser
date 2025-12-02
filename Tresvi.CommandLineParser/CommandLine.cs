@@ -43,11 +43,20 @@ namespace Tresvi.CommandParser
             while (CLI_Arguments.Count != 0)
             {
                 string searchedKeyword = CLI_Arguments[0];
-                if (keywordsAlreadyFound.Contains(searchedKeyword))
-                    throw new MultiInvocationParameterException($"El parametro {searchedKeyword} ya fue especificado en la linea de comando");
                 attribute = FindMatchKeywordVsAttribute(searchedKeyword, targetObject, out property);
+                
+                // Verificar si cualquiera de las keywords del atributo (larga o corta) ya fue procesada
+                if (keywordsAlreadyFound.Contains(attribute.Keyword) || keywordsAlreadyFound.Contains(attribute.ShortKeyword))
+                {
+                    string alreadyUsedKeyword = keywordsAlreadyFound.Contains(attribute.Keyword) ? attribute.Keyword : attribute.ShortKeyword;
+                    throw new MultiInvocationParameterException($"El parametro {searchedKeyword} (equivalente a {alreadyUsedKeyword}) ya fue especificado en la linea de comando");
+                }
+                
                 attribute.ParseAndAssign(property, targetObject, ref CLI_Arguments);
-                keywordsAlreadyFound.Add(searchedKeyword);
+                
+                // Agregar ambas keywords del atributo a la lista para prevenir uso futuro de cualquiera de ellas
+                keywordsAlreadyFound.Add(attribute.Keyword);
+                keywordsAlreadyFound.Add(attribute.ShortKeyword);
             }
 
             CheckRequiredOptions(keywordsAlreadyFound, targetObject);

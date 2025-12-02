@@ -2,7 +2,7 @@
 
 namespace Tresvi.CommandParser.Exceptions
 {
-    internal class TooManyDefaultVerbsException : CommandParserBaseException
+    public class TooManyDefaultVerbsException : CommandParserBaseException
     {
         public TooManyDefaultVerbsException() { }
         public TooManyDefaultVerbsException(string message) : base(message) { }
