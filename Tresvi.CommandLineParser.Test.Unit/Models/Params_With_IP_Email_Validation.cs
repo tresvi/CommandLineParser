@@ -6,39 +6,39 @@ namespace Test_CommandParser.Models
     internal class Params_With_IPValidation_IPv4_IPv6
     {
         [IPValidation(allowIPv4: true, allowIPv6: true)]
-        [Option("ipaddress", 'i', true, HelpText = "Dirección IP (IPv4 o IPv6).")]
+        [Option("ipaddress", 'i', true, helpText : "Dirección IP (IPv4 o IPv6).")]
         public string? IPAddress { get; set; }
     }
 
     internal class Params_With_IPValidation_IPv4_Only
     {
         [IPValidation(allowIPv4: true, allowIPv6: false)]
-        [Option("ipaddress", 'i', true, HelpText = "Dirección IP (solo IPv4).")]
+        [Option("ipaddress", 'i', true, helpText : "Dirección IP (solo IPv4).")]
         public string? IPAddress { get; set; }
     }
 
     internal class Params_With_IPValidation_IPv6_Only
     {
         [IPValidation(allowIPv4: false, allowIPv6: true)]
-        [Option("ipaddress", 'i', true, HelpText = "Dirección IP (solo IPv6).")]
+        [Option("ipaddress", 'i', true, helpText : "Dirección IP (solo IPv6).")]
         public string? IPAddress { get; set; }
     }
 
     internal class Params_With_EmailValidation
     {
         [EmailValidation]
-        [Option("email", 'e', true, HelpText = "Dirección de correo electrónico.")]
+        [Option("email", 'e', true, helpText : "Dirección de correo electrónico.")]
         public string? Email { get; set; }
     }
 
     internal class Params_With_IP_And_Email_Validation
     {
         [IPValidation]
-        [Option("serverip", 's', true, HelpText = "Dirección IP del servidor.")]
+        [Option("serverip", 's', true, helpText : "Dirección IP del servidor.")]
         public string? ServerIP { get; set; }
 
         [EmailValidation]
-        [Option("adminemail", 'a', true, HelpText = "Correo electrónico del administrador.")]
+        [Option("adminemail", 'a', true, helpText : "Correo electrónico del administrador.")]
         public string? AdminEmail { get; set; }
     }
 
