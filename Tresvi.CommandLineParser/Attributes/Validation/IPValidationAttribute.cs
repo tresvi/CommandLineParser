@@ -6,7 +6,6 @@ using System.Reflection;
 
 namespace Tresvi.CommandParser.Attributes.Validation
 {
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public enum PortUsage
     {
         Never = 0,
