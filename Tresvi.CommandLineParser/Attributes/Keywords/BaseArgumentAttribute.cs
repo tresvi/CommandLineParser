@@ -7,9 +7,9 @@ namespace Tresvi.CommandParser.Attributtes.Keywords
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public abstract class BaseArgumentAttribute : Attribute
     {
-        public string Keyword { get; set; }
-        public string ShortKeyword { get; set; }
-        public string HelpText { get; set; }
+        internal string Keyword { get; set; }
+        internal string ShortKeyword { get; set; }
+        internal string HelpText { get; set; }
 
 
         protected BaseArgumentAttribute(string keyword, char shortKeyword, string helpText = "")
