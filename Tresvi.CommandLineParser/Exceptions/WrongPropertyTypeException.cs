@@ -2,7 +2,7 @@
 
 namespace Tresvi.CommandParser.Exceptions
 {
-    internal class WrongPropertyTypeException : CommandParserBaseException
+    public class WrongPropertyTypeException : CommandParserBaseException
     {
         public WrongPropertyTypeException() { }
         public WrongPropertyTypeException(string message) : base(message) { }
