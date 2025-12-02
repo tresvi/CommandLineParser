@@ -44,8 +44,15 @@ namespace Test_CommandParser.Models
 
     internal class Params_With_IPValidation_WithPort
     {
-        [IPValidation(allowIPv4: true, allowIPv6: true, allowPort: true)]
+        [IPValidation(allowIPv4: true, allowIPv6: true, portUsage: PortUsage.Optional)]
         [Option("ipaddress", 'i', true, HelpText = "Dirección IP con puerto (formato: IP:puerto o [IP]:puerto).")]
+        public string? IPAddress { get; set; }
+    }
+
+    internal class Params_With_IPValidation_PortRequired
+    {
+        [IPValidation(allowIPv4: true, allowIPv6: true, portUsage: PortUsage.Required)]
+        [Option("ipaddress", 'i', true, HelpText = "Dirección IP con puerto obligatorio.")]
         public string? IPAddress { get; set; }
     }
 }

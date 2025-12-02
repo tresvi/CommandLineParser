@@ -40,7 +40,7 @@ namespace ParamValidation_Example_NF_4_8
         /// <summary>
         /// Ejemplo de IPValidationAttribute con puerto: Valida que sea una dirección IP válida con puerto (formato: IP:puerto o [IP]:puerto).
         /// </summary>
-        [IPValidation(allowIPv4: true, allowIPv6: true, allowPort: true)]
+        [IPValidation(allowIPv4: true, allowIPv6: true, portUsage: PortUsage.Optional)]
         [Option("api-endpoint", 'a', false, HelpText = "Endpoint de la API con puerto (ej: 192.168.1.1:8080 o [::1]:443).")]
         public string ApiEndpoint { get; set; }
 

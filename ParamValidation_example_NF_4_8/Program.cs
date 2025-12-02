@@ -36,10 +36,10 @@ namespace ParamValidation_Example_NF_4_8
      * Falla: IP inválida
      * .\ParamValidation_Example_NF_4_8.exe -e dev -m admin@example.com -i 999.999.999.999 -c "C:\Temp\config.txt"
      * 
-     * Falla: IP con puerto cuando allowPort es false
+     * Falla: IP con puerto cuando PortUsage es Never
      * .\ParamValidation_Example_NF_4_8.exe -e dev -m admin@example.com -i 192.168.1.1:8080 -c "C:\Temp\config.txt"
      * 
-     * Falla: IP sin puerto cuando allowPort es true
+     * Falla: IP sin puerto cuando PortUsage es Required
      * .\ParamValidation_Example_NF_4_8.exe -e dev -m admin@example.com -i 192.168.1.1 -c "C:\Temp\config.txt" -a 192.168.1.1
      * 
      * Falla: Puerto inválido (fuera de rango)

@@ -7,26 +7,34 @@ using System.Reflection;
 namespace Tresvi.CommandParser.Attributes.Validation
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
+    public enum PortUsage
+    {
+        Never = 0,
+        Optional = 1,
+        Required = 2
+    }
+
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class IPValidationAttribute : ValidationAttributeBase
     {
         private readonly bool _allowIPv4;
         private readonly bool _allowIPv6;
-        private readonly bool _allowPort;
+        private readonly PortUsage _portUsage;
 
         /// <summary>
         /// Valida que el valor del parámetro sea una dirección IP válida (IPv4 o IPv6), opcionalmente con puerto.
         /// </summary>
         /// <param name="allowIPv4">Indica si se permiten direcciones IPv4. Por defecto es true.</param>
         /// <param name="allowIPv6">Indica si se permiten direcciones IPv6. Por defecto es true.</param>
-        /// <param name="allowPort">Indica si se permite incluir el puerto en el formato IP:puerto o [IP]:puerto. Por defecto es false.</param>
-        public IPValidationAttribute(bool allowIPv4 = true, bool allowIPv6 = true, bool allowPort = false)
+        /// <param name="portUsage">Controla si el puerto está prohibido, es opcional o es obligatorio. Por defecto es Never.</param>
+        public IPValidationAttribute(bool allowIPv4 = true, bool allowIPv6 = true, PortUsage portUsage = PortUsage.Never)
         {
             if (!allowIPv4 && !allowIPv6)
                 throw new ArgumentException("Debe permitir al menos IPv4 o IPv6.", nameof(allowIPv4));
 
             _allowIPv4 = allowIPv4;
             _allowIPv6 = allowIPv6;
-            _allowPort = allowPort;
+            _portUsage = portUsage;
         }
 
         internal override bool Check(KeyValuePair<string, string> parameter, PropertyInfo property)
@@ -41,11 +49,11 @@ namespace Tresvi.CommandParser.Attributes.Validation
 
             string ipAddress = inputValue;
             string port = null;
+            bool hasPort = false;
 
-            // Si se permite puerto, extraerlo del string
-            if (_allowPort)
+            if (_portUsage != PortUsage.Never)
             {
-                // Para IPv6 con puerto, el formato es [::1]:8080
+                // IPv6 con formato [IP]:puerto
                 if (inputValue.StartsWith("[") && inputValue.Contains("]:"))
                 {
                     int closingBracketIndex = inputValue.IndexOf("]:");
@@ -53,6 +61,7 @@ namespace Tresvi.CommandParser.Attributes.Validation
                     {
                         ipAddress = inputValue.Substring(1, closingBracketIndex - 1);
                         port = inputValue.Substring(closingBracketIndex + 2);
+                        hasPort = true;
                     }
                     else
                     {
@@ -60,27 +69,24 @@ namespace Tresvi.CommandParser.Attributes.Validation
                             $"El valor '{inputValue}' del parámetro {parameter.Key} tiene un formato de puerto inválido para IPv6. Use el formato [IP]:puerto (ej: [::1]:8080).");
                     }
                 }
-                // Para IPv4 con puerto, el formato es 192.168.1.1:8080
-                else if (inputValue.Contains(":"))
+                // IPv4 con puerto: 192.168.1.1:8080
+                else
                 {
+                    int colonCount = inputValue.Split(':').Length - 1;
                     int lastColonIndex = inputValue.LastIndexOf(':');
-                    if (lastColonIndex > 0)
+                    if (colonCount == 1 && lastColonIndex > 0)
                     {
                         ipAddress = inputValue.Substring(0, lastColonIndex);
                         port = inputValue.Substring(lastColonIndex + 1);
+                        hasPort = true;
                     }
                 }
 
-                // Validar el puerto si se especificó
-                if (!string.IsNullOrEmpty(port))
+                if (hasPort)
                 {
-                    if (!int.TryParse(port, out int portNumber) || portNumber < 1 || portNumber > 65535)
-                    {
-                        throw new InvalidIPAddressException(
-                            $"El puerto '{port}' del parámetro {parameter.Key} no es válido. Debe ser un número entre 1 y 65535.");
-                    }
+                    ValidatePort(port, parameter.Key);
                 }
-                else
+                else if (_portUsage == PortUsage.Required)
                 {
                     throw new InvalidIPAddressException(
                         $"El valor '{inputValue}' del parámetro {parameter.Key} debe incluir un puerto en el formato IP:puerto o [IP]:puerto.");
@@ -88,42 +94,11 @@ namespace Tresvi.CommandParser.Attributes.Validation
             }
             else
             {
-                // Si no se permite puerto, verificar que no haya formato IP:puerto
-                // Primero verificar formato IPv6 con puerto: [::1]:8080
-                if (inputValue.StartsWith("[") && inputValue.Contains("]:"))
+                // Si no se permite puerto, verificar que no haya formato con puerto
+                if (ContainsPortNotation(inputValue))
                 {
                     throw new InvalidIPAddressException(
-                        $"El valor '{inputValue}' del parámetro {parameter.Key} incluye un puerto, pero el validador no permite puertos. Use allowPort: true para permitir puertos.");
-                }
-                // Luego intentar parsear como IP completa (puede ser IPv6 con múltiples :)
-                else if (IPAddress.TryParse(inputValue, out _))
-                {
-                    // Es una IP válida sin puerto, continuar con la validación normal
-                }
-                else
-                {
-                    // No es una IP válida completa, podría ser IPv4:puerto
-                    // Para IPv4 con puerto: formato es 192.168.1.1:8080
-                    if (inputValue.Contains(":"))
-                    {
-                        int lastColonIndex = inputValue.LastIndexOf(':');
-                        if (lastColonIndex > 0)
-                        {
-                            string possibleIP = inputValue.Substring(0, lastColonIndex);
-                            string possiblePort = inputValue.Substring(lastColonIndex + 1);
-                            
-                            // Si la parte después del último : es un número válido de puerto
-                            if (int.TryParse(possiblePort, out int portNum) && portNum >= 1 && portNum <= 65535)
-                            {
-                                // Verificar si la parte antes del : es una IP válida
-                                if (IPAddress.TryParse(possibleIP, out _))
-                                {
-                                    throw new InvalidIPAddressException(
-                                        $"El valor '{inputValue}' del parámetro {parameter.Key} incluye un puerto, pero el validador no permite puertos. Use allowPort: true para permitir puertos.");
-                                }
-                            }
-                        }
-                    }
+                        $"El valor '{inputValue}' del parámetro {parameter.Key} incluye un puerto, pero el validador no permite puertos.");
                 }
             }
 
@@ -148,6 +123,46 @@ namespace Tresvi.CommandParser.Attributes.Validation
             }
 
             return true;
+        }
+
+        private static void ValidatePort(string port, string parameterKey)
+        {
+            if (string.IsNullOrWhiteSpace(port))
+            {
+                throw new InvalidIPAddressException(
+                    $"El parámetro {parameterKey} requiere un puerto válido.");
+            }
+
+            if (!int.TryParse(port, out int portNumber) || portNumber < 1 || portNumber > 65535)
+            {
+                throw new InvalidIPAddressException(
+                    $"El puerto '{port}' del parámetro {parameterKey} no es válido. Debe ser un número entre 1 y 65535.");
+            }
+        }
+
+        private static bool ContainsPortNotation(string inputValue)
+        {
+            if (inputValue.StartsWith("[") && inputValue.Contains("]:"))
+                return true;
+
+            int colonCount = inputValue.Split(':').Length - 1;
+            if (colonCount == 1)
+            {
+                int lastColonIndex = inputValue.LastIndexOf(':');
+                if (lastColonIndex > 0)
+                {
+                    string possibleIP = inputValue.Substring(0, lastColonIndex);
+                    string possiblePort = inputValue.Substring(lastColonIndex + 1);
+
+                    if (int.TryParse(possiblePort, out int portNum) && portNum >= 1 && portNum <= 65535
+                        && IPAddress.TryParse(possibleIP, out _))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
