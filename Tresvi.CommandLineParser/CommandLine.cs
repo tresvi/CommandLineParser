@@ -1,4 +1,5 @@
 ﻿using Tresvi.CommandParser.Attributtes.Keywords;
+using Tresvi.CommandParser.Attributes.Validation;
 using Tresvi.CommandParser.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -7,10 +8,9 @@ using System.Text;
 
 namespace Tresvi.CommandParser
 {
-    //TODO: Agregar un attribute nivel clase para documentacion extra en el helptext. Prto ejemplo explicacion que que hace el programa.
+    //TODO: Agregar un attribute nivel clase para documentacion extra en el helptext. Por ejemplo explicacion que que hace el programa.
     //TODO: Agregar el RangeValidationAttribute.
     //TODO: Agregar un metodo de validacion de clases verbo. que ambas no repitan el mismo verbo. NO, SE DESCARTA
-    //TODO: Analizar la posibilidad de definir un verbo por default (que se tome en caso de que no se escriba nada) para futuras versiones.
     //TODO: Reconocer enumeraciones por su nombre.
     public static class CommandLine
     {
@@ -60,6 +60,8 @@ namespace Tresvi.CommandParser
             }
 
             CheckRequiredOptions(keywordsAlreadyFound, targetObject);
+            CheckIncompatibleParameters(keywordsAlreadyFound, targetObject);
+            CheckRequiredParameters(keywordsAlreadyFound, targetObject);
             return targetObject;
         }
 
@@ -128,6 +130,144 @@ namespace Tresvi.CommandParser
 
 
         /// <summary>
+        /// Revisa que no haya parámetros incompatibles usados simultáneamente en la línea de comandos.
+        /// </summary>
+        /// <param name="keywordsFound">Lista de keywords que fueron encontradas en la línea de comandos.</param>
+        /// <param name="targetObject">Objeto que contiene las propiedades con atributos de argumentos.</param>
+        /// <exception cref="IncompatibleParametersException">Se lanza cuando se detectan parámetros incompatibles.</exception>
+        private static void CheckIncompatibleParameters(List<string> keywordsFound, object targetObject)
+        {
+            // Crear un diccionario que mapea nombres de propiedades a sus PropertyInfo si fueron usadas
+            Dictionary<string, PropertyInfo> usedProperties = new Dictionary<string, PropertyInfo>();
+
+            // Recorrer todas las propiedades y encontrar cuáles fueron usadas (basándose en keywordsFound)
+            foreach (PropertyInfo property in targetObject.GetType().GetProperties())
+            {
+                foreach (BaseArgumentAttribute attribute in property.GetCustomAttributes(typeof(BaseArgumentAttribute), true))
+                {
+                    // Si alguna de las keywords (larga o corta) está en la lista de encontradas, la propiedad fue usada
+                    if (keywordsFound.Contains(attribute.Keyword) || keywordsFound.Contains(attribute.ShortKeyword))
+                    {
+                        usedProperties[property.Name] = property;
+                        break; // Solo necesitamos saber que fue usada, no importa cuántas veces
+                    }
+                }
+            }
+
+            // Para cada propiedad usada, verificar sus incompatibilidades
+            foreach (var kvp in usedProperties)
+            {
+                PropertyInfo property = kvp.Value;
+
+                // Buscar atributos IncompatibleWithAttribute en esta propiedad
+                foreach (Attributes.Validation.IncompatibleWithAttribute incompatibleAttr in 
+                    property.GetCustomAttributes(typeof(Attributes.Validation.IncompatibleWithAttribute), true))
+                {
+                    // Verificar cada propiedad incompatible
+                    foreach (string incompatiblePropName in incompatibleAttr.IncompatiblePropertyNames)
+                    {
+                        // Si la propiedad incompatible también fue usada, lanzar excepción
+                        if (usedProperties.ContainsKey(incompatiblePropName))
+                        {
+                            PropertyInfo incompatibleProperty = usedProperties[incompatiblePropName];
+                            
+                            // Obtener los keywords de ambas propiedades para el mensaje de error
+                            string propertyKeyword = GetKeywordForProperty(property);
+                            string incompatibleKeyword = GetKeywordForProperty(incompatibleProperty);
+                            
+                            throw new IncompatibleParametersException(
+                                $"Los parámetros \"{propertyKeyword}\" y \"{incompatibleKeyword}\" no pueden usarse juntos.");
+                        }
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Obtiene el keyword largo de una propiedad para mostrar en mensajes de error.
+        /// </summary>
+        /// <param name="property">PropertyInfo de la propiedad de la cual obtener el keyword.</param>
+        /// <returns>El keyword largo de la propiedad.</returns>
+        private static string GetKeywordForProperty(PropertyInfo property)
+        {
+            foreach (BaseArgumentAttribute attribute in property.GetCustomAttributes(typeof(BaseArgumentAttribute), true))
+            {
+                // Retornar el keyword largo (siempre está disponible)
+                return attribute.Keyword;
+            }
+            
+            // Si por alguna razón no hay atributo (no debería pasar), usar el nombre de la propiedad
+            return property.Name;
+        }
+
+
+        /// <summary>
+        /// Revisa que cuando un parámetro requiere otros parámetros, estos también estén presentes en la línea de comandos.
+        /// </summary>
+        /// <param name="keywordsFound">Lista de keywords que fueron encontradas en la línea de comandos.</param>
+        /// <param name="targetObject">Objeto que contiene las propiedades con atributos de argumentos.</param>
+        /// <exception cref="RequiredParameterNotFoundException">Se lanza cuando un parámetro requiere otros que no están presentes.</exception>
+        private static void CheckRequiredParameters(List<string> keywordsFound, object targetObject)
+        {
+            // Crear un diccionario que mapea nombres de propiedades a sus PropertyInfo si fueron usadas
+            Dictionary<string, PropertyInfo> usedProperties = new Dictionary<string, PropertyInfo>();
+            
+            // Crear un diccionario que mapea nombres de propiedades a sus PropertyInfo (todas las propiedades)
+            Dictionary<string, PropertyInfo> allProperties = new Dictionary<string, PropertyInfo>();
+
+            // Recorrer todas las propiedades y encontrar cuáles fueron usadas y cuáles existen
+            foreach (PropertyInfo property in targetObject.GetType().GetProperties())
+            {
+                allProperties[property.Name] = property;
+                
+                foreach (BaseArgumentAttribute attribute in property.GetCustomAttributes(typeof(BaseArgumentAttribute), true))
+                {
+                    // Si alguna de las keywords (larga o corta) está en la lista de encontradas, la propiedad fue usada
+                    if (keywordsFound.Contains(attribute.Keyword) || keywordsFound.Contains(attribute.ShortKeyword))
+                    {
+                        usedProperties[property.Name] = property;
+                        break; // Solo necesitamos saber que fue usada, no importa cuántas veces
+                    }
+                }
+            }
+
+            // Para cada propiedad usada, verificar sus requisitos
+            foreach (var kvp in usedProperties)
+            {
+                PropertyInfo property = kvp.Value;
+
+                // Buscar atributos RequiresAttribute en esta propiedad
+                foreach (Attributes.Validation.RequiresAttribute requiresAttr in 
+                    property.GetCustomAttributes(typeof(Attributes.Validation.RequiresAttribute), true))
+                {
+                    // Verificar cada propiedad requerida
+                    foreach (string requiredPropName in requiresAttr.RequiredPropertyNames)
+                    {
+                        // Verificar que la propiedad requerida exista en la clase
+                        if (!allProperties.ContainsKey(requiredPropName))
+                        {
+                            throw new RequiredParameterNotFoundException(
+                                $"El parámetro \"{GetKeywordForProperty(property)}\" requiere el parámetro \"{requiredPropName}\", " +
+                                $"pero la propiedad \"{requiredPropName}\" no existe en la clase \"{targetObject.GetType().Name}\".");
+                        }
+
+                        // Si la propiedad requerida no fue usada, lanzar excepción
+                        if (!usedProperties.ContainsKey(requiredPropName))
+                        {
+                            PropertyInfo requiredProperty = allProperties[requiredPropName];
+                            string requiredKeyword = GetKeywordForProperty(requiredProperty);
+                            
+                            throw new RequiredParameterNotFoundException(
+                                $"El parámetro \"{GetKeywordForProperty(property)}\" requiere que también se especifique el parámetro \"{requiredKeyword}\".");
+                        }
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
         /// Revisa que no haya definiciones duplicadas de keywords y shortkeywords dentro de la clase de destino
         /// </summary>
         /// <exception cref="MultiDefinitionParameterException"></exception>
@@ -181,60 +321,158 @@ namespace Tresvi.CommandParser
         /// <exception cref="UnknownVerbException">Si el verbo indicado no coincide con ninguno de los verbos disponibles.</exception>
         public static object Parse(string[] args, params Type[] verbTypes)
         {
+            // ============================================================
+            // FASE 1: Validaciones iniciales
+            // ============================================================
+            
+            // Validar que se hayan proporcionado tipos de verbos
             if (verbTypes == null || verbTypes.Length == 0)
                 throw new ArgumentException("Debe especificar al menos una clase verbo.", nameof(verbTypes));
 
+            // Validar que los argumentos no sean null
             if (args == null)
                 throw new ArgumentNullException(nameof(args));
 
+            // ============================================================
+            // FASE 2: Manejo de solicitud de ayuda
+            // ============================================================
+            // Si el usuario solicita ayuda (--help, -h, /?, etc.), mostrar la ayuda
+            // y terminar la ejecución del programa
             if (args.Length > 0 && IsHelpRequested(new List<string>(args)))
             {
                 Console.WriteLine(GetHelpTextForVerbs(verbTypes));
                 Environment.Exit(0);
             }
 
-            if (args.Length == 0)
-                throw new NotDefaultVerbException("Debe especificar un verbo en la linea de comandos");
-
-            string searchedVerb = args[0];
-
-            if (string.IsNullOrWhiteSpace(searchedVerb))
-                throw new NotDefaultVerbException("Debe especificar un verbo en la linea de comandos");
-
-            if (searchedVerb.Trim().StartsWith("--") || searchedVerb.Trim().StartsWith("-"))
-                throw new UnknownVerbException($"{searchedVerb} no es un nombre de verbo valido.");
-
-            // Recorremos los tipos candidatos buscando el que tenga el VerbAttribute con el nombre adecuado
-            List<string> verbsAvailable = new List<string>();
-            Type targetVerbType = null;
+            // ============================================================
+            // FASE 3: Detección y validación del verbo por defecto
+            // ============================================================
+            // Recorremos todos los tipos de verbos para:
+            // 1. Validar que estén correctamente decorados con VerbAttribute
+            // 2. Detectar si hay un verbo marcado como por defecto
+            // 3. Validar que solo haya un verbo por defecto (no puede haber múltiples)
+            
+            Type defaultVerbType = null;  // El tipo del verbo por defecto (si existe)
+            List<string> verbsAvailable = new List<string>();  // Lista de verbos disponibles (para mensajes de error)
+            List<Type> allVerbTypes = new List<Type>();  // Lista de todos los tipos de verbos válidos
 
             foreach (Type verbType in verbTypes)
             {
+                // Saltar tipos null (por si acaso)
                 if (verbType == null) continue;
 
+                // Obtener el atributo VerbAttribute de la clase
                 Attribute verbAttributeRaw = verbType.GetCustomAttribute(typeof(VerbAttribute));
                 if (verbAttributeRaw == null)
                     throw new NotVerbClassException($"La clase {verbType.Name} fue utilizada como un verbo, pero no fue decorada como {typeof(VerbAttribute).Name}");
 
+                // Convertir el atributo al tipo específico VerbAttribute
                 VerbAttribute verbAttribute = (VerbAttribute)verbAttributeRaw;
+                
+                // Agregar el nombre del verbo a la lista de disponibles (para mensajes de error)
                 verbsAvailable.Add(verbAttribute.Name);
+                allVerbTypes.Add(verbType);
 
-                if (verbAttribute.Name == searchedVerb)
-                    targetVerbType = verbType;
+                // Si este verbo está marcado como por defecto
+                if (verbAttribute.IsDefault)
+                {
+                    // Validar que no haya otro verbo por defecto ya detectado
+                    if (defaultVerbType != null)
+                        throw new TooManyDefaultVerbsException("Solo puede haber un verbo marcado como por defecto.");
+                    
+                    defaultVerbType = verbType;
+                }
+            }
+            
+            // ============================================================
+            // FASE 4: Determinación del verbo a usar
+            // ============================================================
+            // Determinar qué verbo usar basándose en:
+            // - Si no hay argumentos: usar el verbo por defecto (si existe)
+            // - Si el primer argumento es un parámetro (-- o -): usar el verbo por defecto (si existe)
+            // - Si el primer argumento es un nombre de verbo: buscar y usar ese verbo
+            
+            Type targetVerbType = null;  // El tipo del verbo que se usará finalmente
+            string[] remainingArgs = args;  // Los argumentos que se pasarán al Parse<T> (pueden incluir o no el verbo)
+
+            // Caso 1: No hay argumentos - usar verbo por defecto si existe
+            if (args.Length == 0)
+            {
+                if (defaultVerbType == null)
+                    throw new NotDefaultVerbException("Debe especificar un verbo en la linea de comandos. No hay un verbo por defecto definido.");
+                
+                targetVerbType = defaultVerbType;
+                remainingArgs = new string[0];  // No hay argumentos adicionales
+            }
+            else
+            {
+                string firstArg = args[0];
+
+                // Caso 2: El primer argumento es un parámetro (-- o -) - usar verbo por defecto si existe
+                // Esto permite invocar: miPrograma.exe --parametro valor (sin especificar el verbo)
+                if (firstArg.Trim().StartsWith("--") || firstArg.Trim().StartsWith("-"))
+                {
+                    if (defaultVerbType == null)
+                        throw new NotDefaultVerbException("Debe especificar un verbo en la linea de comandos. No hay un verbo por defecto definido.");
+                    
+                    targetVerbType = defaultVerbType;
+                    remainingArgs = args;  // Mantener todos los argumentos (incluyendo parámetros)
+                }
+                else
+                {
+                    // Caso 3: El primer argumento es un nombre de verbo - buscar ese verbo específico
+                    string searchedVerb = firstArg;
+
+                    // Validar que el verbo no esté vacío o sea solo espacios en blanco
+                    if (string.IsNullOrWhiteSpace(searchedVerb))
+                        throw new NotDefaultVerbException("Debe especificar un verbo en la linea de comandos");
+
+                    // Buscar el verbo solicitado en la lista de verbos disponibles
+                    foreach (Type verbType in allVerbTypes)
+                    {
+                        VerbAttribute verbAttribute = (VerbAttribute)verbType.GetCustomAttribute(typeof(VerbAttribute));
+                        if (verbAttribute.Name == searchedVerb)
+                        {
+                            targetVerbType = verbType;
+                            break;
+                        }
+                    }
+
+                    // Si no se encontró el verbo solicitado, lanzar excepción
+                    if (targetVerbType == null)
+                        throw new UnknownVerbException($"{searchedVerb} no es un nombre de verbo valido. Debe especificar alguno de los siguientes: {string.Join(" | ", verbsAvailable)}");
+
+                    // Eliminar el verbo de la lista de argumentos (ya que ya lo procesamos)
+                    List<string> argsList = new List<string>(args);
+                    argsList.RemoveAt(0);  // Eliminar el verbo (primer elemento)
+                    remainingArgs = argsList.ToArray();  // Convertir a array para pasarlo al método Parse<T>
+                }
             }
 
-            if (targetVerbType == null)
-                throw new UnknownVerbException($"{searchedVerb} no es un nombre de verbo valido. Debe especificar alguno de los siguientes: {string.Join(" | ", verbsAvailable)}");
+            // ============================================================
+            // FASE 5: Preparación completada
+            // ============================================================
+            // En este punto ya tenemos:
+            // - targetVerbType: el tipo del verbo a usar (ya sea por defecto o especificado)
+            // - remainingArgs: los argumentos restantes (sin el verbo, si fue especificado)
 
-            // Elimino el verbo de la lista de argumentos
-            List<string> argsList = new List<string>(args);
-            argsList.RemoveAt(0);
-            string[] remainingArgs = argsList.ToArray();
-
-            // Reutilizo el Parse<T>(string[] args) existente vía reflexión para no duplicar lógica.
+            // ============================================================
+            // FASE 6: Invocación dinámica del método Parse<T> genérico
+            // ============================================================
+            // Como no conocemos el tipo del verbo en tiempo de compilación, necesitamos
+            // usar reflexión para invocar el método genérico Parse<T>(string[] args)
+            // con el tipo específico del verbo encontrado
+            
+            // Buscar el método genérico Parse<T>(string[] args) en la clase CommandLine
             MethodInfo genericParseMethod = null;
             foreach (MethodInfo method in typeof(CommandLine).GetMethods(BindingFlags.Public | BindingFlags.Static))
             {
+                // Buscar el método que:
+                // - Se llame "Parse"
+                // - Sea una definición de método genérico (IsGenericMethodDefinition)
+                // - Tenga exactamente 1 argumento de tipo genérico
+                // - Tenga exactamente 1 parámetro
+                // - Ese parámetro sea de tipo string[]
                 if (method.Name == nameof(Parse)
                     && method.IsGenericMethodDefinition
                     && method.GetGenericArguments().Length == 1
@@ -245,18 +483,28 @@ namespace Tresvi.CommandParser
                     break;
                 }
             }
+            
             if (genericParseMethod == null)
                 throw new InvalidOperationException("No se encontró el método genérico Parse<T>(string[] args).");
 
+            // Crear una versión concreta del método genérico usando el tipo del verbo encontrado
+            // Por ejemplo: Parse<Add>(string[] args) o Parse<Commit>(string[] args)
             MethodInfo concreteParseMethod = genericParseMethod.MakeGenericMethod(targetVerbType);
 
+            // ============================================================
+            // FASE 7: Ejecución del parsing y manejo de excepciones
+            // ============================================================
             try
             {
+                // Invocar el método Parse<T> con los argumentos restantes (sin el verbo)
+                // null como primer parámetro porque es un método estático
                 return concreteParseMethod.Invoke(null, new object[] { remainingArgs });
             }
             catch (TargetInvocationException ex) when (ex.InnerException != null)
             {
-                // Propaga la excepción real lanzada dentro de Parse<T>
+                // Cuando se invoca un método mediante reflexión, las excepciones se envuelven
+                // en TargetInvocationException. Necesitamos extraer la excepción real (InnerException)
+                // para que el código que llama a este método reciba la excepción correcta
                 throw ex.InnerException;
             }
         }
@@ -319,7 +567,6 @@ namespace Tresvi.CommandParser
         }
 
 
-
         /// <summary>
         /// Genera el texto de ayuda para todos los verbos disponibles con sus parámetros.
         /// </summary>
@@ -340,8 +587,9 @@ namespace Tresvi.CommandParser
 
                 VerbAttribute verbAttribute = (VerbAttribute)verbAttributeRaw;
 
-                // Mostrar nombre del verbo y su helptext
-                sb.AppendLine($"  {verbAttribute.Name,-12} {verbAttribute.HelpText}");
+                // Mostrar nombre del verbo, su helptext y si es por defecto
+                string defaultText = verbAttribute.IsDefault ? " (por defecto)" : "";
+                sb.AppendLine($"  {verbAttribute.Name,-12} {verbAttribute.HelpText}{defaultText}");
 
                 // Mostrar parámetros del verbo
                 foreach (PropertyInfo property in verbType.GetProperties())
@@ -367,8 +615,6 @@ namespace Tresvi.CommandParser
             sb.AppendLine(HELP_TEXT);
             return sb.ToString();
         }
-
-
 
 
         /// <summary>
