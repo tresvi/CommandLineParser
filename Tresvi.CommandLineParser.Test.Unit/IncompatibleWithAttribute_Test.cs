@@ -59,7 +59,7 @@ namespace Test_CommandParser
             string[] args = inputLine.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             IncompatibleParametersException ex = Assert.Throws<IncompatibleParametersException>(
-                () => CommandLine.Parse<Parameters_Incompatible>(args));
+                () => CommandLine.Parse<Parameters_Incompatible>(args))!;
 
             Assert.That(ex.Message, Does.Contain("no pueden usarse juntos"));
         }
@@ -73,7 +73,7 @@ namespace Test_CommandParser
             string[] args = inputLine.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             IncompatibleParametersException ex = Assert.Throws<IncompatibleParametersException>(
-                () => CommandLine.Parse<Parameters_Incompatible>(args));
+                () => CommandLine.Parse<Parameters_Incompatible>(args))!;
 
             Assert.That(ex.Message, Does.Contain("no pueden usarse juntos"));
         }
@@ -87,7 +87,7 @@ namespace Test_CommandParser
             string[] args = inputLine.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             IncompatibleParametersException ex = Assert.Throws<IncompatibleParametersException>(
-                () => CommandLine.Parse<Parameters_Incompatible>(args));
+                () => CommandLine.Parse<Parameters_Incompatible>(args))!;
 
             Assert.That(ex.Message, Does.Contain("no pueden usarse juntos"));
         }
@@ -99,7 +99,7 @@ namespace Test_CommandParser
             string[] args = inputLine.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             IncompatibleParametersException ex = Assert.Throws<IncompatibleParametersException>(
-                () => CommandLine.Parse<Parameters_Incompatible>(args));
+                () => CommandLine.Parse<Parameters_Incompatible>(args))!;
 
             Assert.That(ex.Message, Does.Contain("no pueden usarse juntos"));
         }
@@ -113,7 +113,7 @@ namespace Test_CommandParser
             string[] args = inputLine.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             IncompatibleParametersException ex = Assert.Throws<IncompatibleParametersException>(
-                () => CommandLine.Parse<Parameters_Incompatible>(args));
+                () => CommandLine.Parse<Parameters_Incompatible>(args))!;
 
             Assert.That(ex.Message, Does.Contain("no pueden usarse juntos"));
         }

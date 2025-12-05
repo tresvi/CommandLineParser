@@ -7,7 +7,7 @@ namespace Test_CommandParser.Models
     {
         [Option("out", 'o', false, "Archivo de salida")]
         [IncompatibleWith(nameof(Overwrite), nameof(Append))]
-        public string OutputPath { get; set; }
+        public string? OutputPath { get; set; }
 
         [Flag("overwrite", 'w', "Sobrescribir archivo existente")]
         [IncompatibleWith(nameof(Append))]
@@ -18,7 +18,7 @@ namespace Test_CommandParser.Models
 
         [Option("input", 'i', false, "Archivo de entrada")]
         [IncompatibleWith(nameof(OutputPath))]
-        public string Input { get; set; }
+        public string? Input { get; set; }
     }
 }
 

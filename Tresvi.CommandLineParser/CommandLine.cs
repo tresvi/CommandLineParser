@@ -61,6 +61,7 @@ namespace Tresvi.CommandParser
 
             CheckRequiredOptions(keywordsAlreadyFound, targetObject);
             CheckIncompatibleParameters(keywordsAlreadyFound, targetObject);
+            CheckRequiredParameters(keywordsAlreadyFound, targetObject);
             return targetObject;
         }
 
@@ -198,6 +199,71 @@ namespace Tresvi.CommandParser
             
             // Si por alguna razón no hay atributo (no debería pasar), usar el nombre de la propiedad
             return property.Name;
+        }
+
+
+        /// <summary>
+        /// Revisa que cuando un parámetro requiere otros parámetros, estos también estén presentes en la línea de comandos.
+        /// </summary>
+        /// <param name="keywordsFound">Lista de keywords que fueron encontradas en la línea de comandos.</param>
+        /// <param name="targetObject">Objeto que contiene las propiedades con atributos de argumentos.</param>
+        /// <exception cref="RequiredParameterNotFoundException">Se lanza cuando un parámetro requiere otros que no están presentes.</exception>
+        private static void CheckRequiredParameters(List<string> keywordsFound, object targetObject)
+        {
+            // Crear un diccionario que mapea nombres de propiedades a sus PropertyInfo si fueron usadas
+            Dictionary<string, PropertyInfo> usedProperties = new Dictionary<string, PropertyInfo>();
+            
+            // Crear un diccionario que mapea nombres de propiedades a sus PropertyInfo (todas las propiedades)
+            Dictionary<string, PropertyInfo> allProperties = new Dictionary<string, PropertyInfo>();
+
+            // Recorrer todas las propiedades y encontrar cuáles fueron usadas y cuáles existen
+            foreach (PropertyInfo property in targetObject.GetType().GetProperties())
+            {
+                allProperties[property.Name] = property;
+                
+                foreach (BaseArgumentAttribute attribute in property.GetCustomAttributes(typeof(BaseArgumentAttribute), true))
+                {
+                    // Si alguna de las keywords (larga o corta) está en la lista de encontradas, la propiedad fue usada
+                    if (keywordsFound.Contains(attribute.Keyword) || keywordsFound.Contains(attribute.ShortKeyword))
+                    {
+                        usedProperties[property.Name] = property;
+                        break; // Solo necesitamos saber que fue usada, no importa cuántas veces
+                    }
+                }
+            }
+
+            // Para cada propiedad usada, verificar sus requisitos
+            foreach (var kvp in usedProperties)
+            {
+                PropertyInfo property = kvp.Value;
+
+                // Buscar atributos RequiresAttribute en esta propiedad
+                foreach (Attributes.Validation.RequiresAttribute requiresAttr in 
+                    property.GetCustomAttributes(typeof(Attributes.Validation.RequiresAttribute), true))
+                {
+                    // Verificar cada propiedad requerida
+                    foreach (string requiredPropName in requiresAttr.RequiredPropertyNames)
+                    {
+                        // Verificar que la propiedad requerida exista en la clase
+                        if (!allProperties.ContainsKey(requiredPropName))
+                        {
+                            throw new RequiredParameterNotFoundException(
+                                $"El parámetro \"{GetKeywordForProperty(property)}\" requiere el parámetro \"{requiredPropName}\", " +
+                                $"pero la propiedad \"{requiredPropName}\" no existe en la clase \"{targetObject.GetType().Name}\".");
+                        }
+
+                        // Si la propiedad requerida no fue usada, lanzar excepción
+                        if (!usedProperties.ContainsKey(requiredPropName))
+                        {
+                            PropertyInfo requiredProperty = allProperties[requiredPropName];
+                            string requiredKeyword = GetKeywordForProperty(requiredProperty);
+                            
+                            throw new RequiredParameterNotFoundException(
+                                $"El parámetro \"{GetKeywordForProperty(property)}\" requiere que también se especifique el parámetro \"{requiredKeyword}\".");
+                        }
+                    }
+                }
+            }
         }
 
 

@@ -9,9 +9,6 @@ namespace Test_CommandParser
     [TestFixture]
     public class VerbAttribute_Test
     {
-        // ============================================================
-        // CASOS FELICES: Verbo por defecto funciona correctamente
-        // ============================================================
 
         [Test]
         public void Parse_WithDefaultVerb_NoArguments_UsesDefaultVerb()
@@ -104,9 +101,6 @@ namespace Test_CommandParser
             Assert.That(helpText, Does.Not.Contain("log (por defecto)"));
         }
 
-        // ============================================================
-        // CASOS NO FELICES: Errores y validaciones
-        // ============================================================
 
         [Test]
         public void Parse_NoDefaultVerb_NoArguments_ThrowsNotDefaultVerbException()
