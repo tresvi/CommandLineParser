@@ -10,9 +10,9 @@ namespace ParamValidation_Example_NF_4_8
     public class Parameters
     {
         /// <summary>
-        /// Ejemplo de StringListValidationAttribute: Valida que el ambiente sea uno de los valores permitidos.
+        /// Ejemplo de EnumeratedValidationAttribute: Valida que el ambiente sea uno de los valores permitidos.
         /// </summary>
-        [StringListValidation(new[] { "dev", "test", "prod" }, false)]
+        [EnumeratedValidation(new[] { "dev", "test", "prod" }, false)]
         [Option("environment", 'e', true, helpText : "Ambiente de ejecución (dev, test, prod).")]
         public string Environment { get; set; }
 
