@@ -6,7 +6,7 @@ using Tresvi.CommandParser;
 namespace Test_CommandParser
 {
     [TestFixture]
-    public class StringListValidationAttribute_Test
+    public class EnumeratedValidationAttribute_Test
     {
         [SetUp]
         public void Setup()
@@ -18,10 +18,10 @@ namespace Test_CommandParser
         [TestCase(@"--color red")]
         [TestCase(@"--color green")]
         [TestCase(@"--color blue")]
-        public void Parse_StringListValidation_CaseSensitive_ValidValues_OK(string inputLine)
+        public void Parse_EnumeratedValidation_CaseSensitive_ValidValues_OK(string inputLine)
         {
             string[] args = inputLine.Split(' ');
-            Params_With_StringListValidation_CaseSensitive result = CommandLine.Parse<Params_With_StringListValidation_CaseSensitive>(args);
+            Params_With_EnumeratedValidation_CaseSensitive result = CommandLine.Parse<Params_With_EnumeratedValidation_CaseSensitive>(args);
 
             Assert.AreEqual(args[1], result.Color);
         }
@@ -31,11 +31,11 @@ namespace Test_CommandParser
         [TestCase(@"--color BLUE", "BLUE")]
         [TestCase(@"--color yellow", "yellow")]
         [TestCase(@"--color purple", "purple")]
-        public void Parse_StringListValidation_CaseSensitive_InvalidValues_Throws_InvalidStringListValue(string inputLine, string invalidValue)
+        public void Parse_EnumeratedValidation_CaseSensitive_InvalidValues_Throws_InvalidEnumeratedValue(string inputLine, string invalidValue)
         {
             string[] args = inputLine.Split(' ');
-            InvalidStringListValueException? exception = Assert.Throws<InvalidStringListValueException>(
-                () => CommandLine.Parse<Params_With_StringListValidation_CaseSensitive>(args));
+            InvalidEnumeratedValueException? exception = Assert.Throws<InvalidEnumeratedValueException>(
+                () => CommandLine.Parse<Params_With_EnumeratedValidation_CaseSensitive>(args));
 
             Assert.That(exception?.Message, Does.Contain(invalidValue.Trim()));
             Assert.That(exception?.Message, Does.Contain("red, green, blue"));
@@ -54,10 +54,10 @@ namespace Test_CommandParser
         [TestCase(@"--environment prod")]
         [TestCase(@"--environment PROD")]
         [TestCase(@"--environment Prod")]
-        public void Parse_StringListValidation_CaseInsensitive_ValidValues_OK(string inputLine)
+        public void Parse_EnumeratedValidation_CaseInsensitive_ValidValues_OK(string inputLine)
         {
             string[] args = inputLine.Split(' ');
-            Params_With_StringListValidation_CaseInsensitive result = CommandLine.Parse<Params_With_StringListValidation_CaseInsensitive>(args);
+            Params_With_EnumeratedValidation_CaseInsensitive result = CommandLine.Parse<Params_With_EnumeratedValidation_CaseInsensitive>(args);
 
             Assert.AreEqual(args[1], result.Environment);
         }
@@ -66,11 +66,11 @@ namespace Test_CommandParser
         [TestCase(@"--environment production", "production")]
         [TestCase(@"--environment test", "test")]
         [TestCase(@"--environment qa", "qa")]
-        public void Parse_StringListValidation_CaseInsensitive_InvalidValues_Throws_InvalidStringListValue(string inputLine, string invalidValue)
+        public void Parse_EnumeratedValidation_CaseInsensitive_InvalidValues_Throws_InvalidEnumeratedValue(string inputLine, string invalidValue)
         {
             string[] args = inputLine.Split(' ');
-            InvalidStringListValueException? exception = Assert.Throws<InvalidStringListValueException>(
-                () => CommandLine.Parse<Params_With_StringListValidation_CaseInsensitive>(args));
+            InvalidEnumeratedValueException? exception = Assert.Throws<InvalidEnumeratedValueException>(
+                () => CommandLine.Parse<Params_With_EnumeratedValidation_CaseInsensitive>(args));
 
             Assert.That(exception?.Message, Does.Contain(invalidValue));
             Assert.That(exception?.Message, Does.Contain("dev, staging, prod"));
@@ -81,10 +81,10 @@ namespace Test_CommandParser
         #region Single Value Tests
 
         [TestCase(@"--format json")]
-        public void Parse_StringListValidation_SingleValue_Valid_OK(string inputLine)
+        public void Parse_EnumeratedValidation_SingleValue_Valid_OK(string inputLine)
         {
             string[] args = inputLine.Split(' ');
-            Params_With_StringListValidation_SingleValue result = CommandLine.Parse<Params_With_StringListValidation_SingleValue>(args);
+            Params_With_EnumeratedValidation_SingleValue result = CommandLine.Parse<Params_With_EnumeratedValidation_SingleValue>(args);
 
             Assert.AreEqual("json", result.Format);
         }
@@ -93,11 +93,11 @@ namespace Test_CommandParser
         [TestCase(@"--format csv", "csv")]
         [TestCase(@"--format yaml", "yaml")]
         [TestCase(@"--format JSON", "JSON")]
-        public void Parse_StringListValidation_SingleValue_Invalid_Throws_InvalidStringListValue(string inputLine, string invalidValue)
+        public void Parse_EnumeratedValidation_SingleValue_Invalid_Throws_InvalidEnumeratedValue(string inputLine, string invalidValue)
         {
             string[] args = inputLine.Split(' ');
-            InvalidStringListValueException? exception = Assert.Throws<InvalidStringListValueException>(
-                () => CommandLine.Parse<Params_With_StringListValidation_SingleValue>(args));
+            InvalidEnumeratedValueException? exception = Assert.Throws<InvalidEnumeratedValueException>(
+                () => CommandLine.Parse<Params_With_EnumeratedValidation_SingleValue>(args));
 
             Assert.That(exception?.Message, Does.Contain(invalidValue));
             Assert.That(exception?.Message, Does.Contain("json"));
@@ -110,10 +110,10 @@ namespace Test_CommandParser
         [TestCase(@"--mode read --language es")]
         [TestCase(@"--mode write --language EN")]
         [TestCase(@"--mode append --language fr")]
-        public void Parse_StringListValidation_MultipleOptions_ValidValues_OK(string inputLine)
+        public void Parse_EnumeratedValidation_MultipleOptions_ValidValues_OK(string inputLine)
         {
             string[] args = inputLine.Split(' ');
-            Params_With_StringListValidation_MultipleOptions result = CommandLine.Parse<Params_With_StringListValidation_MultipleOptions>(args);
+            Params_With_EnumeratedValidation_MultipleOptions result = CommandLine.Parse<Params_With_EnumeratedValidation_MultipleOptions>(args);
 
             Assert.IsNotNull(result.Mode);
             Assert.IsNotNull(result.Language);
@@ -121,11 +121,11 @@ namespace Test_CommandParser
 
         [TestCase(@"--mode read --language invalid", "invalid")]
         [TestCase(@"--mode invalid --language es", "invalid")]
-        public void Parse_StringListValidation_MultipleOptions_InvalidValues_Throws_InvalidStringListValue(string inputLine, string invalidValue)
+        public void Parse_EnumeratedValidation_MultipleOptions_InvalidValues_Throws_InvalidEnumeratedValue(string inputLine, string invalidValue)
         {
             string[] args = inputLine.Split(' ');
-            InvalidStringListValueException? exception = Assert.Throws<InvalidStringListValueException>(
-                () => CommandLine.Parse<Params_With_StringListValidation_MultipleOptions>(args));
+            InvalidEnumeratedValueException? exception = Assert.Throws<InvalidEnumeratedValueException>(
+                () => CommandLine.Parse<Params_With_EnumeratedValidation_MultipleOptions>(args));
 
             Assert.That(exception?.Message, Does.Contain(invalidValue));
         }
@@ -137,10 +137,10 @@ namespace Test_CommandParser
         [TestCase(@"--option option1")]
         [TestCase(@"--option option2")]
         [TestCase(@"--option option3")]
-        public void Parse_StringListValidation_DefaultCaseSensitive_ValidValues_OK(string inputLine)
+        public void Parse_EnumeratedValidation_DefaultCaseSensitive_ValidValues_OK(string inputLine)
         {
             string[] args = inputLine.Split(' ');
-            Params_With_StringListValidation_DefaultCaseSensitive result = CommandLine.Parse<Params_With_StringListValidation_DefaultCaseSensitive>(args);
+            Params_With_EnumeratedValidation_DefaultCaseSensitive result = CommandLine.Parse<Params_With_EnumeratedValidation_DefaultCaseSensitive>(args);
 
             Assert.AreEqual(args[1], result.Option);
         }
@@ -148,11 +148,11 @@ namespace Test_CommandParser
         [TestCase(@"--option Option1", "Option1")]
         [TestCase(@"--option OPTION1", "OPTION1")]
         [TestCase(@"--option option4", "option4")]
-        public void Parse_StringListValidation_DefaultCaseSensitive_InvalidValues_Throws_InvalidStringListValue(string inputLine, string invalidValue)
+        public void Parse_EnumeratedValidation_DefaultCaseSensitive_InvalidValues_Throws_InvalidEnumeratedValue(string inputLine, string invalidValue)
         {
             string[] args = inputLine.Split(' ');
-            InvalidStringListValueException? exception = Assert.Throws<InvalidStringListValueException>(
-                () => CommandLine.Parse<Params_With_StringListValidation_DefaultCaseSensitive>(args));
+            InvalidEnumeratedValueException? exception = Assert.Throws<InvalidEnumeratedValueException>(
+                () => CommandLine.Parse<Params_With_EnumeratedValidation_DefaultCaseSensitive>(args));
 
             Assert.That(exception?.Message, Does.Contain(invalidValue));
             Assert.That(exception?.Message, Does.Contain("option1, option2, option3"));
@@ -165,10 +165,10 @@ namespace Test_CommandParser
         [TestCase(@"--color red")]
         [TestCase(@"--color green")]
         [TestCase(@"--color blue")]
-        public void Parse_StringListValidation_TrimsValue_OK(string inputLine)
+        public void Parse_EnumeratedValidation_TrimsValue_OK(string inputLine)
         {
             string[] args = inputLine.Split(' ');
-            Params_With_StringListValidation_CaseSensitive result = CommandLine.Parse<Params_With_StringListValidation_CaseSensitive>(args);
+            Params_With_EnumeratedValidation_CaseSensitive result = CommandLine.Parse<Params_With_EnumeratedValidation_CaseSensitive>(args);
 
             Assert.IsNotNull(result.Color);
             Assert.That(result.Color, Is.EqualTo("red").Or.EqualTo("green").Or.EqualTo("blue"));
@@ -176,10 +176,10 @@ namespace Test_CommandParser
 
         [TestCase(@"--environment dev")]
         [TestCase(@"--environment staging")]
-        public void Parse_StringListValidation_CaseInsensitive_TrimsValue_OK(string inputLine)
+        public void Parse_EnumeratedValidation_CaseInsensitive_TrimsValue_OK(string inputLine)
         {
             string[] args = inputLine.Split(' ');
-            Params_With_StringListValidation_CaseInsensitive result = CommandLine.Parse<Params_With_StringListValidation_CaseInsensitive>(args);
+            Params_With_EnumeratedValidation_CaseInsensitive result = CommandLine.Parse<Params_With_EnumeratedValidation_CaseInsensitive>(args);
 
             Assert.IsNotNull(result.Environment);
         }

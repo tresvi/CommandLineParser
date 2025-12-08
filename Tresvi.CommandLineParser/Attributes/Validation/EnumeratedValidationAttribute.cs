@@ -7,7 +7,7 @@ using System.Reflection;
 namespace Tresvi.CommandParser.Attributes.Validation
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    public class StringListValidationAttribute : ValidationAttributeBase
+    public class EnumeratedValidationAttribute : ValidationAttributeBase
     {
         private readonly string[] _allowedValues;
         private readonly bool _caseSensitive;
@@ -17,7 +17,7 @@ namespace Tresvi.CommandParser.Attributes.Validation
         /// </summary>
         /// <param name="allowedValues">Lista de valores permitidos para el parámetro.</param>
         /// <param name="caseSensitive">Indica si la comparación debe ser case-sensitive. Por defecto es true.</param>
-        public StringListValidationAttribute(string[] allowedValues, bool caseSensitive = true)
+        public EnumeratedValidationAttribute(string[] allowedValues, bool caseSensitive = true)
         {
             if (allowedValues == null || allowedValues.Length == 0)
                 throw new ArgumentException("Debe especificar al menos un valor permitido.", nameof(allowedValues));
@@ -44,7 +44,7 @@ namespace Tresvi.CommandParser.Attributes.Validation
             if (!isValid)
             {
                 string allowedValuesList = string.Join(", ", _allowedValues);
-                throw new InvalidStringListValueException(
+                throw new InvalidEnumeratedValueException(
                     $"El valor '{value}' del parámetro {parameter.Key} no es válido. " +
                     $"Valores permitidos: {allowedValuesList}");
             }

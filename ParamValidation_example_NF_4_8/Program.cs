@@ -92,7 +92,7 @@ namespace ParamValidation_Example_NF_4_8
                 Console.WriteLine("Todos los parámetros fueron validados exitosamente.");
                 Console.WriteLine("Fin OK!!");
             }
-            catch (InvalidStringListValueException ex)
+            catch (InvalidEnumeratedValueException ex)
             {
                 Console.WriteLine($"ERROR DE VALIDACIÓN (Lista de Valores): {ex.Message}");
             }
