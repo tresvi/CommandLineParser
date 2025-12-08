@@ -1,6 +1,7 @@
 using Tresvi.CommandParser.Exceptions;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -276,6 +277,113 @@ namespace Test_CommandParser
                 Assert.That(helpText, Does.Contain("--name"));
             });
         }
+
+        #region High Priority Coverage Tests
+
+        /// <summary>
+        /// Test para cubrir la rama donde ShortKeyword está en keywordsAlreadyFound pero Keyword no (línea 51).
+        /// Caso: Se usa -o primero (ShortKeyword de outputfile), luego se intenta usar --outputfile.
+        /// Debe detectar que -o ya fue usado y lanzar MultiInvocationParameterException.
+        /// </summary>
+        [TestCase(@"-o file1.txt --outputfile file2.txt")]
+        public void Parse_ShortKeywordFirstThenLongKeyword_Throws_MultiInvocationParameter(string inputLine)
+        {
+            string[] args = inputLine.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            MultiInvocationParameterException? exception = Assert.Throws<MultiInvocationParameterException>(
+                () => CommandLine.Parse<Parameter_With_Flag>(args));
+
+            Assert.That(exception?.Message, Does.Contain("equivalente"));
+            Assert.That(exception?.Message, Does.Contain("-o"));
+        }
+
+        /// <summary>
+        /// Test para cubrir la rama donde matchCounter > 1 en FindMatchKeywordVsAttribute (línea 98-99).
+        /// Esto ocurre cuando el mismo keyword se encuentra en múltiples propiedades.
+        /// Aunque CheckForDuplicatedKeywordInClass debería detectarlo primero, este test verifica
+        /// que la rama esté cubierta.
+        /// </summary>
+        [Test]
+        public void Parse_MultipleProperties_SameKeyword_Throws_MultiDefinitionParameter()
+        {
+            string inputLine = @"--test value1";
+            string[] args = inputLine.Split(' ');
+            
+            MultiDefinitionParameterException? exception = Assert.Throws<MultiDefinitionParameterException>(
+                () => CommandLine.Parse<Param_MultipleAttributes_SameKeyword>(args));
+
+            Assert.That(exception?.Message, Does.Contain("test"));
+            Assert.That(exception?.Message, Does.Contain("No se puede mapear la misma palabra en mas de una property"));
+        }
+
+        /// <summary>
+        /// Test para cubrir GetDefinedParameters<T>() que actualmente tiene 0% coverage.
+        /// Verifica que el método retorne correctamente todas las keywords y shortKeywords definidas.
+        /// </summary>
+        [Test]
+        public void GetDefinedParameters_WithOptions_ReturnsAllKeywords()
+        {
+            List<string> definedParams = CommandLine.GetDefinedParameters<Parameters>();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(definedParams, Does.Contain("--inputfile"));
+                Assert.That(definedParams, Does.Contain("-i"));
+                Assert.That(definedParams, Does.Contain("--outputfile"));
+                Assert.That(definedParams, Does.Contain("-o"));
+                Assert.That(definedParams.Count, Is.EqualTo(4));
+            });
+        }
+
+        /// <summary>
+        /// Test para GetDefinedParameters con Flags.
+        /// </summary>
+        [Test]
+        public void GetDefinedParameters_WithFlags_ReturnsAllKeywords()
+        {
+            List<string> definedParams = CommandLine.GetDefinedParameters<Parameter_With_Flag>();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(definedParams, Does.Contain("--inputfile"));
+                Assert.That(definedParams, Does.Contain("-i"));
+                Assert.That(definedParams, Does.Contain("--outputfile"));
+                Assert.That(definedParams, Does.Contain("-o"));
+                Assert.That(definedParams, Does.Contain("--sendmail"));
+                Assert.That(definedParams, Does.Contain("-s"));
+                Assert.That(definedParams.Count, Is.EqualTo(6));
+            });
+        }
+
+        /// <summary>
+        /// Test para GetDefinedParameters con clase vacía (sin propiedades con atributos).
+        /// </summary>
+        [Test]
+        public void GetDefinedParameters_EmptyClass_ReturnsEmptyList()
+        {
+            List<string> definedParams = CommandLine.GetDefinedParameters<Param_Empty>();
+
+            Assert.That(definedParams, Is.Empty);
+        }
+
+        /// <summary>
+        /// Test para GetDefinedParameters con múltiples tipos de atributos.
+        /// </summary>
+        [Test]
+        public void GetDefinedParameters_MultipleTypes_ReturnsAllKeywords()
+        {
+            List<string> definedParams = CommandLine.GetDefinedParameters<Param_Multi_Type>();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(definedParams, Does.Contain("--string"));
+                Assert.That(definedParams, Does.Contain("-x"));
+                Assert.That(definedParams, Does.Contain("--datetime"));
+                Assert.That(definedParams, Does.Contain("-d"));
+                Assert.That(definedParams.Count, Is.GreaterThan(20)); // Múltiples propiedades
+            });
+        }
+
+        #endregion
 
         
     }
