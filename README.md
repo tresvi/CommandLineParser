@@ -289,8 +289,8 @@ The help text lists all verbs (if using verbs), parameters, their types, whether
 
 ## Examples
 
-* [Basic Example](https://github.com/tresvi/CommandLineParser/wiki/Basic-Example)
-* [Example with Checkers and Formatters](https://github.com/tresvi/CommandLineParser/wiki/Example-with-Checkers-and-Formatters)
+* [Basic Example](https://github.com/tresvi/CommandLineParser/wiki/Ejemplo-b%C3%A1sico)
+* [Example with Checkers and Formatters](https://github.com/tresvi/CommandLineParser/wiki/Ejemplo-con-uso-de-Checkers-y-Formatters)
 
 ## How It Works
 
