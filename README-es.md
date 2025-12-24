@@ -4,6 +4,7 @@
 CommandLineParser es un biblioteca destinada a facilitar el uso de argumentos de línea de comando, reduciendo drásticamente la cantidad de código. CommandLineParser permite:
 
 * Detectar y tipificar parámetros, asignándole propiedades como obligatoriedad, tipo de dato y valores por default.
+* Soporte nativo para enumeraciones (enums) con parseo automático y mapeo personalizado de valores.
 * Validarlos automáticamente en base a las propiedades asignadas, verificando su tipo de dato, formato, rango (si corresponde) y presencia.
 * Alertar por medio de Exceptions especificas, las inconsistencias halladas.
 * Promover a que las aplicaciones usen una única convención estandarizada de nombres y significados de parametrización alineadas con el estilo estándar de las aplicaciones de Linux (estilo mas difundido entre Linux y DOS. Ver The Art of UNIX Programming)
@@ -79,6 +80,8 @@ o bien
 \>myPrograma.exe -i "C:\Temp\input.txt"
 ```
 
+Las Options pueden ser de cualquier tipo primitivo, tipos nullable, DateTime, enumeraciones (enums), o strings.
+
 _Flags_: Son parámetros que no llevan valor, ni son obligatortios. El flag es simplemente un parámetro que cuando se incluye en la línea de comando, su property asociada se setea en _true_, cuando no aparece, se setea en _false_. Por esta razón siempre se los debe asociar con variables boolean. Ejemplo:
 
 ```
@@ -101,6 +104,131 @@ En los anteriores ejemplos, tenemos los verbos _commit_ y _add_. El primero tien
 
 Nota: Todos los terminos mencionados son **case sensitive**.
 
+## Soporte de Enumeraciones (Enums)
+
+CommandLineParser proporciona soporte nativo para tipos enumeración con parseo automático y mapeo personalizado opcional.
+
+### Uso Básico de Enums
+
+Los enums se detectan y parsean automáticamente. Puedes usar nombres del enum (sin distinción de mayúsculas/minúsculas) o índices numéricos:
+
+```csharp
+public enum LogLevel
+{
+    Debug,
+    Info,
+    Warning,
+    Error
+}
+
+public class Parametros
+{
+    [Option("level", 'l', false, "Nivel de logging")]
+    public LogLevel LogLevel { get; set; }
+}
+```
+
+**Uso:**
+```bash
+miPrograma.exe --level Info
+miPrograma.exe --level info        # Sin distinción de mayúsculas/minúsculas
+miPrograma.exe --level 1           # Índice numérico
+```
+
+### Enums Nullable
+
+Los enums nullable están completamente soportados para parámetros opcionales:
+
+```csharp
+public enum Ambiente
+{
+    Desarrollo,
+    Staging,
+    Produccion
+}
+
+public class Parametros
+{
+    [Option("env", 'e', false, "Ambiente objetivo")]
+    public Ambiente? Ambiente { get; set; }
+}
+```
+
+### Mapeo Personalizado de Enums
+
+Usa `[EnumMap]` para definir valores de entrada personalizados que se mapean a valores del enum. Esto es útil para aliases o cuando quieres aceptar nombres diferentes a los miembros del enum:
+
+```csharp
+public enum FormatoSalida
+{
+    Json,
+    Xml,
+    Csv,
+    Yaml
+}
+
+public class Parametros
+{
+    [Option("formato", 'f', false, "Formato de salida")]
+    [EnumMap("json", FormatoSalida.Json)]
+    [EnumMap("xml", FormatoSalida.Xml)]
+    [EnumMap("csv", FormatoSalida.Csv)]
+    [EnumMap("j", FormatoSalida.Json)]  // Alias corto
+    [EnumMap("x", FormatoSalida.Xml)]   // Alias corto
+    public FormatoSalida Formato { get; set; }
+}
+```
+
+**Uso:**
+```bash
+miPrograma.exe --formato json
+miPrograma.exe --formato j           # Alias corto
+miPrograma.exe --formato JSON          # Sin distinción de mayúsculas/minúsculas
+```
+
+**Nota:** Cuando se usa `[EnumMap]`, solo se aceptan los valores mapeados. El parseo automático de nombres del enum se desactiva para esa propiedad.
+
+### Enums con Valores Numéricos Personalizados
+
+Los enums con valores numéricos personalizados están completamente soportados:
+
+```csharp
+public enum Prioridad
+{
+    Baja = 1,
+    Media = 5,
+    Alta = 10,
+    Critica = 99
+}
+
+public class Parametros
+{
+    [Option("prioridad", 'p', false, "Nivel de prioridad")]
+    public Prioridad Prioridad { get; set; }
+}
+```
+
+**Uso:**
+```bash
+miPrograma.exe --prioridad Alta
+miPrograma.exe --prioridad 10        # Valor numérico
+miPrograma.exe --prioridad 1         # Valor numérico
+```
+
+### Combinando Enums con Validación
+
+Puedes combinar propiedades enum con `[EnumeratedValidation]` para restringir qué valores del enum se aceptan:
+
+```csharp
+public class Parametros
+{
+    [Option("level", 'l', false, "Nivel de logging")]
+    [EnumeratedValidation(new[] { "Debug", "Info", "Warning" })]
+    public LogLevel LogLevel { get; set; }
+}
+```
+
+Esto restringe el `LogLevel` a solo `Debug`, `Info`, o `Warning` (rechazando `Error`).
 
 ## Próximas funcionalidades
 ...

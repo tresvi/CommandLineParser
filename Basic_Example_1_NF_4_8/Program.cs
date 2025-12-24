@@ -9,13 +9,13 @@ namespace Basic_Example_1_NF_4_8
     //Clase que Modela los parametros esperados
     public class Parameters
     {
-        [Option("archivo-salida", 'a', true, helpText: "Nombre del archivo a crear.")]
+        [Option("archivo-salida", 'a', true, "Nombre del archivo a crear.")]
         public string ArchivoSalida { get; set; }
 
-        [Option("tamano", 't', true, helpText : "Tamaño del archivo en bytes.")]
+        [Option("tamano", 't', true,  "Tamaño del archivo en bytes.")]
         public int Tamano { get; set; }
 
-        [Flag("notificar", 'n', helpText : "Indica si se debe notificar por mail el resultado del proceso.")]
+        [Flag("notificar", 'n', "Indica si se debe notificar por mail el resultado del proceso.")]
         public bool NotificarPorMail { get; set; }
     }
 

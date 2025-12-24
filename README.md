@@ -5,7 +5,8 @@ A powerful and intuitive .NET library for parsing command-line arguments with mi
 ## Features
 
 * **Declarative Parameter Definition**: Define parameters using attributes on class properties
-* **Automatic Type Conversion**: Supports all primitive types, nullable types, DateTime, and custom formatting
+* **Automatic Type Conversion**: Supports all primitive types, nullable types, DateTime, enums, and custom formatting
+* **Enum Support**: Native enum parsing with automatic name matching (case-insensitive) and numeric index support, with optional custom value mapping
 * **Built-in Validation**: Comprehensive validation attributes for common scenarios (email, IP addresses, file/directory existence, regex patterns, enumerated values)
 * **Verb Support**: Implement Git-like verb commands (e.g., `git commit`, `git push`) with separate parameter sets per verb
 * **Default Verbs**: Define a default verb that executes when no verb is specified
@@ -190,6 +191,9 @@ CommandLineParser provides several built-in validation attributes:
 - `[RegexValidation]` - Validates using regular expressions
 - `[EnumeratedValidation]` - Validates against a list of allowed values
 
+### Enum Mapping
+- `[EnumMap]` - Maps custom input values to enum values (allows aliases and custom names)
+
 ### Example with Validation
 
 ```csharp
@@ -208,6 +212,132 @@ public class Parameters
     public string Environment { get; set; }
 }
 ```
+
+## Enum Support
+
+CommandLineParser provides native support for enum types with automatic parsing and optional custom mapping.
+
+### Basic Enum Usage
+
+Enums are automatically detected and parsed. You can use enum names (case-insensitive) or numeric indices:
+
+```csharp
+public enum LogLevel
+{
+    Debug,
+    Info,
+    Warning,
+    Error
+}
+
+public class Parameters
+{
+    [Option("level", 'l', false, "Logging level")]
+    public LogLevel LogLevel { get; set; }
+}
+```
+
+**Usage:**
+```bash
+myProgram.exe --level Info
+myProgram.exe --level info        # Case-insensitive
+myProgram.exe --level 1           # Numeric index
+```
+
+### Nullable Enums
+
+Nullable enums are fully supported for optional parameters:
+
+```csharp
+public enum Environment
+{
+    Development,
+    Staging,
+    Production
+}
+
+public class Parameters
+{
+    [Option("env", 'e', false, "Target environment")]
+    public Environment? Environment { get; set; }
+}
+```
+
+### Custom Enum Mapping
+
+Use `[EnumMap]` to define custom input values that map to enum values. This is useful for aliases or when you want to accept different names than the enum members:
+
+```csharp
+public enum OutputFormat
+{
+    Json,
+    Xml,
+    Csv,
+    Yaml
+}
+
+public class Parameters
+{
+    [Option("format", 'f', false, "Output format")]
+    [EnumMap("json", OutputFormat.Json)]
+    [EnumMap("xml", OutputFormat.Xml)]
+    [EnumMap("csv", OutputFormat.Csv)]
+    [EnumMap("j", OutputFormat.Json)]  // Short alias
+    [EnumMap("x", OutputFormat.Xml)]   // Short alias
+    public OutputFormat Format { get; set; }
+}
+```
+
+**Usage:**
+```bash
+myProgram.exe --format json
+myProgram.exe --format j           # Short alias
+myProgram.exe --format JSON        # Case-insensitive
+```
+
+**Note:** When `[EnumMap]` is used, only the mapped values are accepted. The automatic enum name parsing is disabled for that property.
+
+### Enums with Custom Numeric Values
+
+Enums with custom numeric values are fully supported:
+
+```csharp
+public enum Priority
+{
+    Low = 1,
+    Medium = 5,
+    High = 10,
+    Critical = 99
+}
+
+public class Parameters
+{
+    [Option("priority", 'p', false, "Priority level")]
+    public Priority Priority { get; set; }
+}
+```
+
+**Usage:**
+```bash
+myProgram.exe --priority High
+myProgram.exe --priority 10        # Numeric value
+myProgram.exe --priority 1          # Numeric value
+```
+
+### Combining Enums with Validation
+
+You can combine enum properties with `[EnumeratedValidation]` to restrict which enum values are accepted:
+
+```csharp
+public class Parameters
+{
+    [Option("level", 'l', false, "Logging level")]
+    [EnumeratedValidation(new[] { "Debug", "Info", "Warning" })]
+    public LogLevel LogLevel { get; set; }
+}
+```
+
+This restricts the `LogLevel` to only `Debug`, `Info`, or `Warning` (rejecting `Error`).
 
 ## Parameter Relationships
 
@@ -248,6 +378,7 @@ CommandLineParser throws specific exceptions for different error scenarios:
 - `ValueNotFoundException` - Parameter value missing
 - `MultiInvocationParameterException` - Parameter used multiple times
 - `MultiDefinitionParameterException` - Duplicate parameter definition
+- `ParseValueException` - Value cannot be parsed or converted to the target type (e.g., invalid enum value)
 - `InvalidFormatException` - Format validation failed
 - `InvalidEmailAddressException` - Email validation failed
 - `InvalidIPAddressException` - IP validation failed
