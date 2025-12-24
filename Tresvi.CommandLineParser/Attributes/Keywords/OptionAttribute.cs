@@ -3,6 +3,7 @@ using Tresvi.CommandParser.Attributes.Validation;
 using Tresvi.CommandParser.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Tresvi.CommandParser.Attributtes.Keywords
@@ -241,8 +242,105 @@ namespace Tresvi.CommandParser.Attributtes.Keywords
                 return;
             }
 
+            // Reviso si la asignación se hace a una enumeración
+            if (propertyType.IsEnum)
+            {
+                object enumValue = ParseEnumValue(property, rawFieldContent, argumentName, propertyType);
+                
+                // .NET maneja automáticamente la conversión a nullable si la propiedad es nullable
+                property.SetValue(targetObject, enumValue);
+
+                return;
+            }
+
             throw new ParseValueException($"El parametro \"{argumentName}\" de valor \"{rawFieldContent}\" se esta asignando " +
                 $"a la \"{property.Name}\" de tipo {property.PropertyType.Name} el cual no es soportado por esta biblioteca");
+        }
+
+        /// <summary>
+        /// Parsea un valor de string a un valor de enumeración, considerando mapeos personalizados si existen.
+        /// </summary>
+        private object ParseEnumValue(PropertyInfo property, string rawValue, string argumentName, Type enumType)
+        {
+            rawValue = rawValue.Trim();
+            string rawValueLower = rawValue.ToLowerInvariant();
+
+            // Buscar mapeos personalizados (EnumMapAttribute)
+            EnumMapAttribute[] enumMaps = property.GetCustomAttributes(typeof(EnumMapAttribute), false)
+                .Cast<EnumMapAttribute>()
+                .ToArray();
+
+            if (enumMaps.Length > 0)
+            {
+                // Buscar en los mapeos personalizados (case-insensitive)
+                foreach (EnumMapAttribute enumMap in enumMaps)
+                {
+                    if (string.Equals(enumMap.InputValue, rawValue, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Validar que el valor mapeado sea del tipo correcto
+                        if (enumMap.EnumValue.GetType() != enumType)
+                        {
+                            throw new ParseValueException(
+                                $"El valor mapeado '{enumMap.EnumValue}' del atributo EnumMap no corresponde al tipo de enum {enumType.Name}.");
+                        }
+                        return enumMap.EnumValue;
+                    }
+                }
+
+                // Si hay mapeos pero no se encontró coincidencia, no permitir parseo automático
+                string mappedValues = string.Join(", ", enumMaps.Select(m => $"\"{m.InputValue}\""));
+                string enumNames = string.Join(", ", Enum.GetNames(enumType));
+                throw new ParseValueException(
+                    $"El parametro \"{argumentName}\" no acepta el valor \"{rawValue}\". " +
+                    $"Valores mapeados permitidos: {mappedValues}. " +
+                    $"Valores del enum disponibles: {enumNames}.");
+            }
+
+            // No hay mapeos personalizados, usar parseo automático del enum
+            // Primero verificar si es un valor numérico
+            if (int.TryParse(rawValue, out int numericValue))
+            {
+                // Verificar que el valor numérico corresponda a un valor definido en el enum
+                Array enumValues = Enum.GetValues(enumType);
+                foreach (object enumValue in enumValues)
+                {
+                    int enumIntValue = Convert.ToInt32(enumValue);
+                    if (enumIntValue == numericValue)
+                    {
+                        return enumValue;
+                    }
+                }
+
+                // Si no se encontró, generar mensaje de error
+                string[] validNames = Enum.GetNames(enumType);
+                Array validValues = Enum.GetValues(enumType);
+                string validValuesList = string.Join(", ", validNames);
+                string validNumericValues = string.Join(", ", validValues.Cast<object>().Select(v => Convert.ToInt32(v).ToString()));
+
+                throw new ParseValueException(
+                    $"El parametro \"{argumentName}\" no acepta el valor \"{rawValue}\" como valor válido del enum {enumType.Name}. " +
+                    $"Valores válidos (nombres, case-insensitive): {validValuesList}. " +
+                    $"Valores válidos (numéricos): {validNumericValues}.");
+            }
+
+            // Si no es numérico, intentar como nombre del enum (case-insensitive)
+            try
+            {
+                return Enum.Parse(enumType, rawValue, ignoreCase: true);
+            }
+            catch (ArgumentException)
+            {
+                // Generar mensaje de error con valores válidos
+                string[] validNames = Enum.GetNames(enumType);
+                Array validValues = Enum.GetValues(enumType);
+                string validValuesList = string.Join(", ", validNames);
+                string validNumericValues = string.Join(", ", validValues.Cast<object>().Select(v => Convert.ToInt32(v).ToString()));
+
+                throw new ParseValueException(
+                    $"El parametro \"{argumentName}\" no acepta el valor \"{rawValue}\" como valor válido del enum {enumType.Name}. " +
+                    $"Valores válidos (nombres, case-insensitive): {validValuesList}. " +
+                    $"Valores válidos (numéricos): {validNumericValues}.");
+            }
         }
 
     }
