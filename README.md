@@ -371,7 +371,7 @@ public bool Append { get; set; }
 
 ## Exception Handling
 
-CommandLineParser throws specific exceptions for different error scenarios:
+CommandLineParser throws specific exceptions for different error scenarios and all of them are descendant from the same base exception "CommandParserBaseException". You can catch this base exception or could catch the specific exception if you like. The detailed exceptions are:
 
 - `UnknownParameterException` - Unknown parameter provided
 - `RequiredParameterNotFoundException` - Required parameter missing
