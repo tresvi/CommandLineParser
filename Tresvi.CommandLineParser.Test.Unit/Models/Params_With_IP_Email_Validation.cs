@@ -5,21 +5,21 @@ namespace Test_CommandParser.Models
 {
     internal class Params_With_IPValidation_IPv4_IPv6
     {
-        [IPValidation(allowIPv4: true, allowIPv6: true)]
+        [IPValidation(AllowedIpVersion.Both)]
         [Option("ipaddress", 'i', true, helpText : "Dirección IP (IPv4 o IPv6).")]
         public string? IPAddress { get; set; }
     }
 
     internal class Params_With_IPValidation_IPv4_Only
     {
-        [IPValidation(allowIPv4: true, allowIPv6: false)]
+        [IPValidation(AllowedIpVersion.IPv4)]
         [Option("ipaddress", 'i', true, helpText : "Dirección IP (solo IPv4).")]
         public string? IPAddress { get; set; }
     }
 
     internal class Params_With_IPValidation_IPv6_Only
     {
-        [IPValidation(allowIPv4: false, allowIPv6: true)]
+        [IPValidation(AllowedIpVersion.IPv6)]
         [Option("ipaddress", 'i', true, helpText : "Dirección IP (solo IPv6).")]
         public string? IPAddress { get; set; }
     }
@@ -44,14 +44,14 @@ namespace Test_CommandParser.Models
 
     internal class Params_With_IPValidation_WithPort
     {
-        [IPValidation(allowIPv4: true, allowIPv6: true, portUsage: PortUsage.Optional)]
+        [IPValidation(AllowedIpVersion.Both, PortUsage.Optional)]
         [Option("ipaddress", 'i', true, helpText : "Dirección IP con puerto (formato: IP:puerto o [IP]:puerto).")]
         public string? IPAddress { get; set; }
     }
 
     internal class Params_With_IPValidation_PortRequired
     {
-        [IPValidation(allowIPv4: true, allowIPv6: true, portUsage: PortUsage.Required)]
+        [IPValidation(AllowedIpVersion.Both, PortUsage.Required)]
         [Option("ipaddress", 'i', true, helpText : "Dirección IP con puerto obligatorio.")]
         public string? IPAddress { get; set; }
     }

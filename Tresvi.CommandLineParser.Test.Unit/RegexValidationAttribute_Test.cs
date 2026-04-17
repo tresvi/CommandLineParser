@@ -1,7 +1,10 @@
+using System;
+using System.Text.RegularExpressions;
 using Tresvi.CommandParser.Exceptions;
 using NUnit.Framework;
 using Test_CommandParser.Models;
 using Tresvi.CommandParser;
+using Tresvi.CommandParser.Attributes.Validation;
 
 namespace Test_CommandParser
 {
@@ -201,6 +204,16 @@ namespace Test_CommandParser
 
             Assert.IsNotNull(result.Code);
             Assert.That(result.Code, Is.EqualTo("AB1234"));
+        }
+
+        [Test]
+        public void RegexValidationAttribute_ctor_invalid_pattern_with_regex_options_throws_ArgumentException()
+        {
+            var ex = Assert.Throws<ArgumentException>(() =>
+                new RegexValidationAttribute("(", "err", RegexOptions.None));
+
+            Assert.That(ex!.ParamName, Is.EqualTo("pattern"));
+            Assert.That(ex.Message, Does.Contain("no es válido"));
         }
 
         #endregion

@@ -60,7 +60,7 @@ namespace EnumMap_Example_NF_4_8
                 }
                 
                 Console.WriteLine();
-                Console.WriteLine("Fin OK!!");
+                Console.WriteLine("Fin OK!!. Presione una tecla para salir...");
             }
             catch (CommandParserBaseException ex)
             {

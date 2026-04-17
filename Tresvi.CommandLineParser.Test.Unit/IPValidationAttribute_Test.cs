@@ -1,7 +1,9 @@
+using System;
 using Tresvi.CommandParser.Exceptions;
 using NUnit.Framework;
 using Test_CommandParser.Models;
 using Tresvi.CommandParser;
+using Tresvi.CommandParser.Attributes.Validation;
 
 namespace Test_CommandParser
 {
@@ -222,6 +224,17 @@ namespace Test_CommandParser
                 () => CommandLine.Parse<Params_With_IPValidation_WithPort>(args));
 
             Assert.That(exception?.Message, Does.Contain("formato").Or.Contain("no es una dirección IP válida").Or.Contain("[IP]:puerto"));
+        }
+
+        [Test]
+        public void Parse_IPValidation_WithPort_EmptyPortAfterColon_Throws_InvalidIPAddressException()
+        {
+            string[] args = { "--ipaddress", "192.168.1.1:" };
+
+            var ex = Assert.Throws<InvalidIPAddressException>(() =>
+                CommandLine.Parse<Params_With_IPValidation_WithPort>(args));
+
+            Assert.That(ex!.Message, Does.Contain("puerto"));
         }
 
         #endregion
