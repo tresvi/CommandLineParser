@@ -49,6 +49,33 @@ namespace Test_CommandParser
             Assert.That(exception?.Message, Does.Contain(invalidValue.Trim()).Or.Contain("no puede estar vacío").Or.Contain("espacios"));
         }
 
+        [Test]
+        public void Parse_EmailValidation_EmailWithSpaces_Throws_InvalidEmailAddressException()
+        {
+            string[] args = { "--email", "user name@example.com" };
+
+            var ex = Assert.Throws<InvalidEmailAddressException>(() =>
+                CommandLine.Parse<Params_With_EmailValidation>(args));
+
+            // El regex rechaza el espacio antes de la rama Contains(" "); el mensaje es el de valor no válido.
+            Assert.That(ex!.Message, Does.Contain("user name@example.com").Or.Contain("espacios"));
+        }
+
+        [Test]
+        public void Parse_EmailValidation_EmailLongerThan254Chars_Throws_InvalidEmailAddressException()
+        {
+            string local = new string('a', 250);
+            string email = local + "@bc.co";
+            Assert.That(email.Length, Is.GreaterThan(254));
+
+            string[] args = { "--email", email };
+
+            var ex = Assert.Throws<InvalidEmailAddressException>(() =>
+                CommandLine.Parse<Params_With_EmailValidation>(args));
+
+            Assert.That(ex!.Message, Does.Contain("254"));
+        }
+
         #endregion
     }
 }

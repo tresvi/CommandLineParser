@@ -1,5 +1,6 @@
 using Tresvi.CommandParser;
 using Tresvi.CommandParser.Exceptions;
+using Tresvi.CommandParser.Attributes.Validation;
 using NUnit.Framework;
 using System;
 using Test_CommandParser.Models;
@@ -177,6 +178,13 @@ namespace Test_CommandParser
             Assert.That(result.OutputFile, Is.Null);
         }
 
+        [Test]
+        public void RequiresAttribute_ctor_null_property_names_uses_empty_array()
+        {
+            var attr = new RequiresAttribute((string[])null!);
+
+            Assert.That(attr.RequiredPropertyNames, Is.Not.Null.And.Empty);
+        }
     }
 }
 

@@ -146,6 +146,17 @@ namespace Test_CommandParser
         }
 
         [Test]
+        public void Parse_DateTimeFormatter_InvalidDateString_Throws_InvalidFormatException()
+        {
+            string[] args = { "--fecha-inicial", "not-a-date" };
+
+            var ex = Assert.Throws<InvalidFormatException>(() =>
+                CommandLine.Parse<Param_With_Format>(args));
+
+            Assert.That(ex!.Message, Does.Contain("fecha").Or.Contain("formato"));
+        }
+
+        [Test]
         public void Parse_Verbs_SkipsNullEntryInVerbTypesArray_UsesRemainingTypes()
         {
             string[] args = { "add", "--directory", @"C:\Temp\", "-n", "x.txt" };

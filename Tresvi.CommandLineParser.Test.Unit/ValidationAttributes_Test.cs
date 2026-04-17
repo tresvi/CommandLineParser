@@ -2,8 +2,8 @@ using Tresvi.CommandParser.Exceptions;
 using NUnit.Framework;
 using System;
 using System.IO;
-using Test_CommandParser.Models;
 using Tresvi.CommandParser;
+using Test_CommandParser.Models;
 
 namespace Test_CommandParser
 {
@@ -115,6 +115,31 @@ namespace Test_CommandParser
             Assert.Throws<DirectoryAlreadyExistsException>(() => CommandLine.Parse<Params_With_File_Dir_NotExists>(args));
 
             Directory.Delete(outputDir);
+        }
+
+        [Test]
+        public void Parse_DirectoryExists_OutputDirWithTrailingSeparator_OnExistingDirectory_OK()
+        {
+            string tempDir = Path.Combine(Path.GetTempPath(), "clp_dir_" + Guid.NewGuid().ToString("n"));
+            Directory.CreateDirectory(tempDir);
+            string inputPath = Path.Combine(tempDir, "input.txt");
+            File.WriteAllText(inputPath, "x");
+
+            string outputDirWithSlash = tempDir.EndsWith(Path.DirectorySeparatorChar)
+                ? tempDir
+                : tempDir + Path.DirectorySeparatorChar;
+
+            string[] args = { "--inputfile", inputPath, "--outputdir", outputDirWithSlash };
+
+            try
+            {
+                _ = CommandLine.Parse<Params_With_File_Dir_Exists>(args);
+            }
+            finally
+            {
+                File.Delete(inputPath);
+                Directory.Delete(tempDir);
+            }
         }
 
         #endregion

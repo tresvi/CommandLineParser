@@ -13,26 +13,30 @@ namespace Tresvi.CommandParser.Attributes.Validation
         Required = 2
     }
 
+    /// <summary>
+    /// Indica qué familias de dirección IP acepta el validador.
+    /// </summary>
+    public enum AllowedIpVersion
+    {
+        IPv4 = 0,
+        IPv6 = 1,
+        Both = 2
+    }
+
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class IPValidationAttribute : ValidationAttributeBase
     {
-        private readonly bool _allowIPv4;
-        private readonly bool _allowIPv6;
+        private readonly AllowedIpVersion _allowedIpVersion;
         private readonly PortUsage _portUsage;
 
         /// <summary>
         /// Valida que el valor del parámetro sea una dirección IP válida (IPv4 o IPv6), opcionalmente con puerto.
         /// </summary>
-        /// <param name="allowIPv4">Indica si se permiten direcciones IPv4. Por defecto es true.</param>
-        /// <param name="allowIPv6">Indica si se permiten direcciones IPv6. Por defecto es true.</param>
+        /// <param name="allowedIpVersion">Indica si se permiten solo IPv4, solo IPv6 o ambas. Por defecto es <see cref="AllowedIpVersion.Both"/>.</param>
         /// <param name="portUsage">Controla si el puerto está prohibido, es opcional o es obligatorio. Por defecto es Never.</param>
-        public IPValidationAttribute(bool allowIPv4 = true, bool allowIPv6 = true, PortUsage portUsage = PortUsage.Never)
+        public IPValidationAttribute(AllowedIpVersion allowedIpVersion = AllowedIpVersion.Both, PortUsage portUsage = PortUsage.Never)
         {
-            if (!allowIPv4 && !allowIPv6)
-                throw new ArgumentException("Debe permitir al menos IPv4 o IPv6.", nameof(allowIPv4));
-
-            _allowIPv4 = allowIPv4;
-            _allowIPv6 = allowIPv6;
+            _allowedIpVersion = allowedIpVersion;
             _portUsage = portUsage;
         }
 
@@ -109,13 +113,16 @@ namespace Tresvi.CommandParser.Attributes.Validation
             }
 
             // Validar tipo de IP permitido
-            if (parsedIP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork && !_allowIPv4)
+            bool allowIPv4 = _allowedIpVersion == AllowedIpVersion.Both || _allowedIpVersion == AllowedIpVersion.IPv4;
+            bool allowIPv6 = _allowedIpVersion == AllowedIpVersion.Both || _allowedIpVersion == AllowedIpVersion.IPv6;
+
+            if (parsedIP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork && !allowIPv4)
             {
                 throw new InvalidIPAddressException(
                     $"El valor '{ipAddress}' del parámetro {parameter.Key} es una dirección IPv4, pero solo se permiten direcciones IPv6.");
             }
 
-            if (parsedIP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6 && !_allowIPv6)
+            if (parsedIP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6 && !allowIPv6)
             {
                 throw new InvalidIPAddressException(
                     $"El valor '{ipAddress}' del parámetro {parameter.Key} es una dirección IPv6, pero solo se permiten direcciones IPv4.");
