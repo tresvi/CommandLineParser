@@ -1,4 +1,4 @@
-﻿using Tresvi.CommandParser.Attributtes.Keywords;
+using Tresvi.CommandParser.Attributtes.Keywords;
 using Tresvi.CommandParser.Attributes.Validation;
 using Tresvi.CommandParser.Exceptions;
 using System;
@@ -44,19 +44,22 @@ namespace Tresvi.CommandParser
             {
                 string searchedKeyword = CLI_Arguments[0];
                 attribute = FindMatchKeywordVsAttribute(searchedKeyword, targetObject, out property);
-                
-                // Verificar si cualquiera de las keywords del atributo (larga o corta) ya fue procesada
-                if (keywordsAlreadyFound.Contains(attribute.Keyword) || keywordsAlreadyFound.Contains(attribute.ShortKeyword))
+
+                bool allowRepeat = attribute is OptionAttribute repeatOpt && repeatOpt.AllowMultiple;
+
+                if (!allowRepeat &&
+                    (keywordsAlreadyFound.Contains(attribute.Keyword) || keywordsAlreadyFound.Contains(attribute.ShortKeyword)))
                 {
                     string alreadyUsedKeyword = keywordsAlreadyFound.Contains(attribute.Keyword) ? attribute.Keyword : attribute.ShortKeyword;
                     throw new MultiInvocationParameterException($"El parametro {searchedKeyword} (equivalente a {alreadyUsedKeyword}) ya fue especificado en la linea de comando");
                 }
-                
+
                 attribute.ParseAndAssign(property, targetObject, ref CLI_Arguments);
-                
-                // Agregar ambas keywords del atributo a la lista para prevenir uso futuro de cualquiera de ellas
-                keywordsAlreadyFound.Add(attribute.Keyword);
-                keywordsAlreadyFound.Add(attribute.ShortKeyword);
+
+                if (!keywordsAlreadyFound.Contains(attribute.Keyword))
+                    keywordsAlreadyFound.Add(attribute.Keyword);
+                if (!keywordsAlreadyFound.Contains(attribute.ShortKeyword))
+                    keywordsAlreadyFound.Add(attribute.ShortKeyword);
             }
 
             CheckRequiredOptions(keywordsAlreadyFound, targetObject);
@@ -558,7 +561,8 @@ namespace Tresvi.CommandParser
                 {
                     if (attribute is BaseArgumentAttribute argument)
                     {
-                        sb.AppendLine($"{argument.Keyword} | {argument.ShortKeyword}\t\t{argument.HelpText}");
+                        string repeatHint = (argument is OptionAttribute opt && opt.AllowMultiple) ? "(repetible) " : "";
+                        sb.AppendLine($"{argument.Keyword} | {argument.ShortKeyword}\t\t{repeatHint}{argument.HelpText}");
                     }
                 }
             }
@@ -604,7 +608,9 @@ namespace Tresvi.CommandParser
                                 requiredText = "(Requerido) ";
                             }
 
-                            sb.AppendLine($"    {argument.Keyword} | {argument.ShortKeyword,-3}\t{requiredText}{argument.HelpText}");
+                            string repeatText = (argument is OptionAttribute optRep && optRep.AllowMultiple) ? "(repetible) " : "";
+
+                            sb.AppendLine($"    {argument.Keyword} | {argument.ShortKeyword,-3}\t{requiredText}{repeatText}{argument.HelpText}");
                         }
                     }
                 }
