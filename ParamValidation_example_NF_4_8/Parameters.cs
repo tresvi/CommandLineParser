@@ -26,21 +26,21 @@ namespace ParamValidation_Example_NF_4_8
         /// <summary>
         /// Ejemplo de IPValidationAttribute: Valida que sea una dirección IP válida (IPv4 o IPv6).
         /// </summary>
-        [IPValidation(allowIPv4: true, allowIPv6: true)]
+        [IPValidation(AllowedIpVersion.Both)]
         [Option("server-ip", 'i', true, helpText : "Dirección IP del servidor (IPv4 o IPv6).")]
         public string ServerIP { get; set; }
 
         /// <summary>
         /// Ejemplo de IPValidationAttribute solo IPv4: Valida que sea una dirección IPv4.
         /// </summary>
-        [IPValidation(allowIPv4: true, allowIPv6: false)]
+        [IPValidation(AllowedIpVersion.IPv4)]
         [Option("database-ip", 'd', false, helpText : "Dirección IP de la base de datos (solo IPv4).")]
         public string DatabaseIP { get; set; }
 
         /// <summary>
         /// Ejemplo de IPValidationAttribute con puerto: Valida que sea una dirección IP válida con puerto (formato: IP:puerto o [IP]:puerto).
         /// </summary>
-        [IPValidation(allowIPv4: true, allowIPv6: true, portUsage: PortUsage.Optional)]
+        [IPValidation(AllowedIpVersion.Both, PortUsage.Optional)]
         [Option("api-endpoint", 'a', false, helpText : "Endpoint de la API con puerto (ej: 192.168.1.1:8080 o [::1]:443).")]
         public string ApiEndpoint { get; set; }
 

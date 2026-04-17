@@ -1,7 +1,9 @@
+using System;
 using Tresvi.CommandParser.Exceptions;
 using NUnit.Framework;
 using Test_CommandParser.Models;
 using Tresvi.CommandParser;
+using Tresvi.CommandParser.Attributes.Validation;
 
 namespace Test_CommandParser
 {
@@ -182,6 +184,22 @@ namespace Test_CommandParser
             Params_With_EnumeratedValidation_CaseInsensitive result = CommandLine.Parse<Params_With_EnumeratedValidation_CaseInsensitive>(args);
 
             Assert.IsNotNull(result.Environment);
+        }
+
+        #endregion
+
+        #region Constructor contract
+
+        [Test]
+        public void EnumeratedValidationAttribute_ctor_null_allowed_values_throws_ArgumentException()
+        {
+            Assert.Throws<ArgumentException>(() => new EnumeratedValidationAttribute(null!, caseSensitive: true));
+        }
+
+        [Test]
+        public void EnumeratedValidationAttribute_ctor_empty_allowed_values_throws_ArgumentException()
+        {
+            Assert.Throws<ArgumentException>(() => new EnumeratedValidationAttribute(Array.Empty<string>()));
         }
 
         #endregion

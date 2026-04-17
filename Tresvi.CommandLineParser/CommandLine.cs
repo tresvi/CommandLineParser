@@ -22,7 +22,7 @@ namespace Tresvi.CommandParser
         /// <typeparam name="T">Tipo de Clase a rellenar en base a los argumentos recibidos como parametros</typeparam>
         /// <param name="args">Argumentos obtenidos de la linea de comando</param>
         /// <returns></returns>
-        public static T Parse<T>(string[] args) where T : new()
+        public static T Parse<T>(string[] args) where T : class, new()
         {
             T targetObject = new T();
             List<string> CLI_Arguments = new List<string>(args);

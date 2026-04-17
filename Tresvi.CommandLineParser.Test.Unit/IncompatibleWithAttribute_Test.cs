@@ -1,5 +1,6 @@
 using Tresvi.CommandParser;
 using Tresvi.CommandParser.Exceptions;
+using Tresvi.CommandParser.Attributes.Validation;
 using NUnit.Framework;
 using System;
 using Test_CommandParser.Models;
@@ -127,6 +128,14 @@ namespace Test_CommandParser
 
             Assert.That(result.Input, Is.EqualTo("input.txt"));
             Assert.That(result.OutputPath, Is.Null);
+        }
+
+        [Test]
+        public void IncompatibleWithAttribute_ctor_null_property_names_uses_empty_array()
+        {
+            var attr = new IncompatibleWithAttribute((string[])null!);
+
+            Assert.That(attr.IncompatiblePropertyNames, Is.Not.Null.And.Empty);
         }
     }
 }
