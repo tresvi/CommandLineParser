@@ -134,6 +134,18 @@ namespace Test_CommandParser
         }
 
         [Test]
+        public void Parse_DateTimeFormatterOnNonDateTimeProperty_ThrowsInvalidadPropertyTypeException()
+        {
+            string[] args = { "--when", "20240101" };
+
+            var ex = Assert.Throws<InvalidadPropertyTypeException>(() =>
+                CommandLine.Parse<Param_DateTimeFormatter_WrongPropertyType>(args));
+
+            Assert.That(ex!.Message, Does.Contain("When"));
+            Assert.That(ex.Message, Does.Contain("DateTime"));
+        }
+
+        [Test]
         public void Parse_Verbs_SkipsNullEntryInVerbTypesArray_UsesRemainingTypes()
         {
             string[] args = { "add", "--directory", @"C:\Temp\", "-n", "x.txt" };
